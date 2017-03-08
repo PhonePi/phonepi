@@ -1,0 +1,13 @@
+### Pandoc ###
+*.tex
+### LaTeX ###
+*.pdf
+*.snm
+*.toc
+*.vrb
+*.out
+*.nav
+*.aux
+*.log
+*.bbl
+*.blg
