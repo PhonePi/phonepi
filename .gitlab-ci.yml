@@ -1,0 +1,10 @@
+stages:
+  - build
+
+presentation00:
+  stage: build
+  script: cd presentation; make
+  artifacts:
+    name: presentation00
+    paths:
+    - lab5/presentation/presentation.pdf
