@@ -15,11 +15,11 @@
 
 ## Иерархия oFono
 
-![oFono](/home/arseny/SystemPr/XXOn/Untitled.jpg)
+![oFono](Untitled.jpg)
 
 ## Иерархия драйверов
 
-![Drivers](/home/arseny/SystemPr/XXOn/dv6KDaOgNLQ.jpg)
+![Drivers](dv6KDaOgNLQ.jpg)
 
 ## Требования
 
