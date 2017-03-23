@@ -1,0 +1,7 @@
+---
+lang: en-US,ru-RU
+babel-lang: russian
+#polyglossia-lang:
+#    name: russian
+theme: metropolis
+---
