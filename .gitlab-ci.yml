@@ -8,3 +8,11 @@ presentation00:
     name: presentation00
     paths:
     - lab5/presentation/presentation.pdf
+
+oFonoSlides:
+  stage: build
+  script: cd presentations/OS\&Co/oFono; make
+  artifacts:
+    name: oFonoSlides
+    paths:
+    - presentations/OS\&Co/oFono/presentation.pdf
