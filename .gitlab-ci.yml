@@ -19,7 +19,7 @@ oFonoSlides:
 
 gpsSlides:
   stage: build
-  script: cd presentations/OS\&Co/gps; make
+  script: ls -l; cd presentations/OS\&Co/gps; ls -l; make
   artifacts:
     name: gpsSlides
     paths:
