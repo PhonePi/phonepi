@@ -16,3 +16,11 @@ oFonoSlides:
     name: oFonoSlides
     paths:
     - presentations/OS&Co/oFono/presentation.pdf
+
+gpsSlides:
+  stage: build
+  script: cd presentations/OS\&Co/gps; make
+  artifacts:
+    name: gpsSlides
+    paths:
+    - presentations/OS&Co/gps/presentation.pdf
