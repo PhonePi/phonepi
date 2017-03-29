@@ -13,7 +13,7 @@ sprint1:
   stage: build
   script: cd presentations/sprint1/; make
   artifacts:
-    name: sprint0
+    name: sprint1
     paths:
     - presentations/sprint1/presentation.pdf
 
