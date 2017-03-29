@@ -1,13 +1,21 @@
 stages:
   - build
 
-presentation00:
+sprint0:
   stage: build
   script: cd presentations/sprint0/; make
   artifacts:
-    name: presentation00
+    name: sprint0
     paths:
     - presentations/sprint0/presentation.pdf
+
+sprint1:
+  stage: build
+  script: cd presentations/sprint1/; make
+  artifacts:
+    name: sprint0
+    paths:
+    - presentations/sprint1/presentation.pdf
 
 oFonoSlides:
   stage: build
