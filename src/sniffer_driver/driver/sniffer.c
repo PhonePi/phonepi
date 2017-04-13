@@ -5,24 +5,13 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
-#include <linux/fcntl.h>
 #include <linux/string.h>
 #include <linux/termios.h>
 #include <linux/syscalls.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/syscalls.h>
 #include <linux/fcntl.h>
 #include <asm/uaccess.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/syscalls.h>
 #include <linux/file.h>
 #include <linux/fs.h>
-#include <linux/fcntl.h>
-#include <asm/uaccess.h>
-
 
 #define  DEVICE_NAME "sniffer"
 #define  CLASS_NAME  "sniff"
@@ -47,8 +36,7 @@ static int     dev_release(struct inode *, struct file *);
 static ssize_t dev_read(struct file *, char *, size_t, loff_t *);
 static ssize_t dev_write(struct file *, const char *, size_t, loff_t *);
 
-static struct file_operations fops =
-{
+static struct file_operations fops = {
    .open = dev_open,
    .read = dev_read,
    .write = dev_write,
@@ -106,65 +94,6 @@ int file_write(struct file* file, unsigned long long offset, const unsigned char
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-/// Functions to interact with real device
-////////////////////////////////////////////////////////////////////////////////////
-/*
-int set_interface_attribs (int fd, int speed, int parity) {
-    struct termios tty;
-    memset (&tty, 0, sizeof tty);
-    if (tcgetattr (fd, &tty) != 0) {
-        // error_message ("error %d from tcgetattr", errno);
-        printk(KERN_INFO "sniffer: cannot get device attributes\n");
-        return -1;
-    }
-
-    cfsetospeed (&tty, speed);
-    cfsetispeed (&tty, speed);
-
-    tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
-    // disable IGNBRK for mismatched speed tests; otherwise receive break
-    // as \000 chars
-    tty.c_iflag &= ~IGNBRK;         // disable break processing
-    tty.c_lflag = 0;                // no signaling chars, no echo,
-                                // no canonical processing
-    tty.c_oflag = 0;                // no remapping, no delays
-    tty.c_cc[VMIN]  = 0;            // read doesn't block
-    tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-
-    tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
-                                    // enable reading
-    tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
-    tty.c_cflag |= parity;
-    tty.c_cflag &= ~CSTOPB;
-    tty.c_cflag &= ~CRTSCTS;
-
-    if (tcsetattr (fd, TCSANOW, &tty) != 0) {
-        printk(KERN_INFO "sniffer: cannot set device attributes\n");
-        return -1;
-    }
-    return -1;
-}
-
-void set_blocking (int fd, int should_block) {
-    struct termios tty;
-    memset (&tty, 0, sizeof tty);
-    if (tcgetattr (fd, &tty) != 0) {
-        printk(KERN_INFO "sniffer: cannot get device attributes\n");
-        return;
-    }
-
-    tty.c_cc[VMIN]  = should_block ? 1 : 0;
-    tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-    if (tcsetattr (fd, TCSANOW, &tty) != 0) {
-        printk(KERN_INFO "sniffer: cannot set device attributes\n");
-    }
-}
-*/
-
-////////////////////////////////////////////////////////////////////////////////////
 /// Fake device driver functions
 //////////////////////////////////////////////////////////////////////////////////// 
 static int __init sniffer_init(void) {
@@ -219,8 +148,6 @@ static int dev_open(struct inode *inodep, struct file *filep) {
    }
 
    // Assume that device is already configured
-//   set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-//   set_blocking (fd, 0);                     // set no blocking
    return 0;
 }
 
