@@ -1,0 +1,6 @@
+#!/usr/bin/python3
+
+import sys
+
+f = open('workfile', 'w')
+f.write(sys.argv[1])

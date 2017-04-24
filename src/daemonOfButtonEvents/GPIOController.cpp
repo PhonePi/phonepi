@@ -159,7 +159,7 @@ int GPIOController::getValueOnEvent(int timeOutInMSec) {
 
     // waiting of event
     err =  poll(pollfd, 1, timeOutInMSec);
-    if(err != 1 && errno !=0) {
+    if(err != 1 && errno !=0 && errno !=4) { // 4 - Interrupted system call
         cout << "GPIOController Error#8: errno=" << errno << "; " << 
             "Unable to poll the value of GPIO"
              << this->gpioNum << ";" << endl;
