@@ -1,13 +1,17 @@
 #ifndef GPIO_CLASS_H
 #define GPIO_CLASS_H
 
-#include <string>
-#include <signal.h>
-#include <poll.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <linux/limits.h>
+#include <fstream>
+#include <iostream>
+#include <string.h>
+#include <poll.h>                   // "poll"
+#include <sys/stat.h>				// "read/write/lseek"
+#include <fcntl.h>					// "O_RDONLY"
+#include <linux/limits.h>           // "MAX_PATH"
+#include <errno.h>                  //  codes of errors
+
+#define DEFAULT_DIRECT "input"      // default value of direction
+#define DEFAULT_EDGE   "both"       // default type of event (edge)
 
 using namespace std;
 
@@ -16,15 +20,15 @@ class GPIOController
 {
 public:
     // create a GPIO object that controls GPIO with number == gpioNum
-    GPIOController(int gpioNum, string direction);
+    GPIOController(int gpioNum, string direction=DEFAULT_DIRECT, string event=DEFAULT_EDGE);
     ~GPIOController();              // no comments
-    
+
     int setDirection(string dir);   // set GPIO Direction (input or output)
     int setEvent(string edge);      // set type of event - type of edge (none, both, rising or falling)
     int setValue(int value);        // set GPIO Value (only for output GPIO)
 
-    int getValueOnEvent(int timeOut);   // get GPIO Value on the Event (only for input pin)
-    
+    int getValueOnEvent(int timeOutInMSec);   // get GPIO Value on the Event, time in ms
+
     int getValue();                 // get GPIO Value (only for input pin)
     int getGpioNum();               // return the GPIO number associated with the instance of an object
     string getGpioDirection();      // return direction of the GPIO

@@ -1,43 +1,40 @@
-#include <fstream>
-#include <string>
-#include <string.h>
-#include <iostream>
-#include <sstream>
 #include "GPIOController.h"
 
 using namespace std;
 
-// constructor creates and registers new GPIO with number "gpioNum" to system
-GPIOController::GPIOController(int gpioNum, string direction) {
+// constructor creates and registers new GPIO with number "gpioNum" into the system
+GPIOController::GPIOController(int gpioNum, string direction, string event) {
     // Instatiate GPIOController object for GPIO with current gpioNum number
     this->gpioNum = to_string(gpioNum);
 
     // open export file for adding new GPIO
     ofstream gpioExport("/sys/class/gpio/export");
     if (!gpioExport.is_open()){
-        cout << " OPERATION FAILED: Unable to export GPIO"
+        cout << "GPIOController Error#1: errno=" << errno << "; " << 
+            "Unable to export GPIO"
              << this->gpioNum << ";" << endl;
         this->gpioNum = to_string(-1);
         return;
     }
 
-    // add new GPIO to configuration
+    // add new GPIO to configuration and close file
     gpioExport << this->gpioNum ;
     gpioExport.close();
-    
+
     // set dicrection for gpioNum
-    if (setDirection(direction) < 0) {
-        //~GPIOController();
-        return;
-    }
+    setDirection(direction);
+
+    // set type of event
+    setEvent(event);
 }
 
-// destructor unregisters and delete GPIO with number "this->gpioNum" from the system
+// destructor unregisters and removes GPIO with number "this->gpioNum" from system
 GPIOController::~GPIOController() {
     // open unExport file for removing GPIO
     ofstream gpioUnExport("/sys/class/gpio/unexport");
     if (!gpioUnExport.is_open()){
-        cout << " OPERATION FAILED: Unable to unexport GPIO"
+        cout << "GPIOController Error#3: errno=" << errno << "; " << 
+            "Unable to unexport GPIO"
              << this->gpioNum << ";" << endl;
         return;
     }
@@ -54,13 +51,14 @@ int GPIOController::setDirection(string dir) {
     string gpioDirPath ="/sys/class/gpio/gpio" + this->gpioNum + "/direction";
     ofstream gpioDirFile(gpioDirPath.c_str());
     if (!gpioDirFile.is_open()){
-        cout << " OPERATION FAILED: Unable to set direction of GPIO"
+        cout << "GPIOController Error#2: errno=" << errno << "; " << 
+            "Unable to set direction for GPIO"
              << this->gpioNum << ";" << endl;
         return -1;
     }
 
-    // write the direction to direction file (gpioDirPath)
-    gpioDirFile << dir; 
+    // write the direction to special file of direction
+    gpioDirFile << dir;
     gpioDirFile.close();
     this->direction = dir;
     return 0;
@@ -68,43 +66,33 @@ int GPIOController::setDirection(string dir) {
 
 // function setEvent sets type of event  (none, both, rising or falling)
 int GPIOController::setEvent(string event) {
-    // check mode of GPIO: function only for input gpio
-    if (strcmp(this->direction.c_str(), "in") != 0) {
-        cout << " OPERATION FAILED: Function \"setValue\" works only with IN GPIO"
-             << this->gpioNum << ";" << endl;
-        return -1;
-    }
-
     // open file, which contain event of GPIO (0 or 1)
-    string gpioeventPath = "/sys/class/gpio/gpio" + this->gpioNum + "/edge";
-    ofstream gpioeventFile(gpioeventPath.c_str()); // open event file for current gpio
-    if (!gpioeventFile.is_open()) {
-        cout << " OPERATION FAILED: Unable to set the event of GPIO"
+    string gpioEventPath = "/sys/class/gpio/gpio" + this->gpioNum + "/edge";
+    ofstream gpioEventFile(gpioEventPath.c_str());
+    if (!gpioEventFile.is_open()) {
+        cout << "GPIOController Error#4: errno=" << errno << "; " << 
+            "Unable to set event (edge) for GPIO"
              << this->gpioNum << ";" << endl;
         return -2;
     }
 
-    // set event into gpioeventPath
-    gpioeventFile << event;
-    gpioeventFile.close();
+    // set type of event into file of event
+    gpioEventFile << event;
+    gpioEventFile.close();
+
+    // also remember as property of GPIO
     this->event = event;
     return 0;
 }
 
-// function setValue sets value only for output GPIO
+// function setValue sets value of GPIO
 int GPIOController::setValue(int value) {
-    // check mode of GPIO: function only for output gpio
-    if (strcmp(this->direction.c_str(), "out") != 0) {
-        cout << " OPERATION FAILED: Function \"setValue\" works only with OUT GPIO"
-             << this->gpioNum << ";" << endl;
-        return -1;
-    }
-    
-    // open file, which contain value of GPIO (0 or 1)
+    // open file, which should contain value of GPIO (0 or 1)
     string gpioValuePath = "/sys/class/gpio/gpio" + this->gpioNum + "/value";
-    ofstream gpioValueFile(gpioValuePath.c_str()); // open value file for gpio
-    if (!gpioValueFile.is_open()){
-        cout << " OPERATION FAILED: Unable to set the value of GPIO"
+    ofstream gpioValueFile(gpioValuePath.c_str());
+    if (!gpioValueFile.is_open()) {
+        cout << "GPIOController Error#5: errno=" << errno << "; " << 
+            "Unable to set value of GPIO"
              << this->gpioNum << ";" << endl;
         return -2;
     }
@@ -115,50 +103,39 @@ int GPIOController::setValue(int value) {
     return 0;
 }
 
-// function getValue gets value, only for input GPIO
+// function getValue gets value of GPIO
 int GPIOController::getValue() {
-    // check mode of GPIO: function only for input gpio
-    if (strcmp(this->direction.c_str(), "in") != 0) {
-        cout << " OPERATION FAILED: Function \"getValue\" works only with IN GPIO"
-             << this->gpioNum << ";" << endl;
-        return -1;
-    }
-    
     // open file, which contain value of GPIO (0 or 1)
     string gpioValuePath = "/sys/class/gpio/gpio" + this->gpioNum + "/value";
     ifstream gpioValueFile(gpioValuePath.c_str());
     if (!gpioValueFile.is_open()){
-        cout << " OPERATION FAILED: Unable to get the value from GPIO"
+        cout << "GPIOController Error#6: errno=" << errno << "; " << 
+            "Unable to get the value of GPIO"
              << this->gpioNum << ";" << endl;
         return -2;
     }
-
     // read GPIO
     string tmp;
     gpioValueFile >> tmp ;
     gpioValueFile.close();
-    
+
+    // if 0 return 0 else return 1;
     return strcmp(tmp.c_str(), "0") == 0 ? 0 : 1;
 }
 
-// function getValue gets value on the event (look function setEvent), only for input GPIO
-int GPIOController::getValueOnEvent(int timeOut) {
-    // check mode of GPIO: function only for input gpio
-    if (strcmp(this->direction.c_str(), "in") != 0) {
-        cout << " OPERATION FAILED: Function \"getValue\" works only with IN GPIO"
-             << this->gpioNum << ";" << endl;
-        return -1;
-    }
-    
-    // check type of event
+// function getValue gets value of GPIO on the event (look function setEvent)
+int GPIOController::getValueOnEvent(int timeOutInMSec) {
+    // check (and may be set) type of event
     if (strcmp(this->event.c_str(), "both") != 0
-        && strcmp(this->event.c_str(), "rising") != 0
-        && strcmp(this->event.c_str(), "falling") != 0) {
-        // reset default type of event
-        if (setEvent("rising") < 0) return -2;
-        cout << "Warning. Type of event is not defined. Default value (rising) is choisen." << endl;
+     && strcmp(this->event.c_str(), "rising") != 0
+     && strcmp(this->event.c_str(), "falling") != 0) {
+        // try to reset default type of event
+        if (setEvent(DEFAULT_EDGE) < 0)
+            return -2;
+        cout << "GPIOController Warning. Type of event is not defined." << endl
+             << "Default value (" << DEFAULT_EDGE << ") is set." << endl;
     }
-    
+
     char gpioValueFile[PATH_MAX];
     int fd;
     char c;
@@ -166,10 +143,11 @@ int GPIOController::getValueOnEvent(int timeOut) {
     struct pollfd pollfd[1];
 
     // polling the line
-    snprintf(gpioValueFile, sizeof(gpioValueFile), "/sys/class/gpio/gpio%d/value", this->gpioNum);
+    snprintf(gpioValueFile, sizeof(gpioValueFile), "/sys/class/gpio/gpio%s/value", this->gpioNum.c_str());
     fd = open(gpioValueFile, O_RDONLY);
     if (fd < 0) {
-        cout << " OPERATION FAILED: Unable to open file with the value of GPIO"
+        cout << "GPIOController Error#7: errno=" << errno << "; " << 
+            "Unable to open the file with value of GPIO"
              << this->gpioNum << ";" << endl;
         return -3;
     }
@@ -180,9 +158,10 @@ int GPIOController::getValueOnEvent(int timeOut) {
     pollfd[0].revents = 0;
 
     // waiting of event
-    err =  poll(pollfd, 1, timeOut);
-    if(err != 1) {
-        cout << " OPERATION FAILED: Unable to POLL file with the value of GPIO"
+    err =  poll(pollfd, 1, timeOutInMSec);
+    if(err != 1 && errno !=0) {
+        cout << "GPIOController Error#8: errno=" << errno << "; " << 
+            "Unable to poll the value of GPIO"
              << this->gpioNum << ";" << endl;
         return -4;
     }
@@ -198,10 +177,12 @@ int GPIOController::getValueOnEvent(int timeOut) {
 int GPIOController::getGpioNum() {
     return stoi(this->gpioNum);
 }
+
 // get direction of current GPIO
 string GPIOController::getGpioDirection() {
     return this->direction;
 }
+
 // get type of event of current GPIO
 string GPIOController::getGpioEvent() {
     return this->event;
