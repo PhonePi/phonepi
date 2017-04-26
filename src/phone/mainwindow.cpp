@@ -31,23 +31,35 @@ void MainWindow::DialNumber(QString number)
 	if(number.isEmpty() || number.isNull())
 		return;
 
-	QDBusConnection bus = QDBusConnection::sessionBus();
+	QDBusConnection bus = QDBusConnection::systemBus();
 	
 	if(!bus.isConnected())
 		fprintf(stderr, "Couldn't connect");
 
-	QDBusInterface dbus_iface("org.ofono", "/", 
-							"org.ofono.Manager", bus);
-	qDebug() << dbus_iface.service();
-	qDebug() << dbus_iface.path();
-	qDebug() << dbus_iface.interface();
+	QDBusInterface dbus_iface("org.ofono", "/", "org.ofono.Manager", bus);
 
-	auto modem = dbus_iface.call("GetModems");
+	QDBusMessage modem = dbus_iface.call("GetModems");
 
-	qDebug() << modem;
-
-	for( auto &&i : modem.arguments())
-	{
-		qDebug() << "Modem: " << i.toString();
+	if(QDBusMessage::ErrorMessage == modem.type()){
+		qDebug() << modem.errorMessage();
+		return;
 	}
+	
+	qDebug() << modem;
+	qDebug() << modem.arguments();
+
+	/*const QDBusArgument &dbusArgs = */qDebug() << modem.arguments().first();//.value<QDBusArgument>();
+
+	//qDebug() << dbusArgs;
+
+	//QDBusObjectPath path;
+	//qDebug() << dbusArgs.currentType();
+    /*dbusArgs.beginArray();
+    while (!dbusArgs.atEnd())
+    {
+        dbusArgs >> path;
+    }
+    dbusArgs.endArray();*/
+    //dbusArgs >> path;
+    //qDebug() << path.path();
 }
