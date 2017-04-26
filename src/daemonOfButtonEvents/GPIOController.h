@@ -5,9 +5,9 @@
 #include <iostream>
 #include <string.h>
 #include <poll.h>                   // "poll"
-#include <unistd.h>					// "read/write/lseek"
+#include <unistd.h>                 // "read/write/lseek"
 #include <sys/stat.h>
-#include <fcntl.h>					// "O_RDONLY"
+#include <fcntl.h>                  // "O_RDONLY"
 #include <linux/limits.h>           // "MAX_PATH"
 #include <errno.h>                  //  codes of errors
 
