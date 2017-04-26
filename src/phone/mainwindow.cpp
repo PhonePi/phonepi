@@ -46,7 +46,7 @@ void MainWindow::DialNumber(QString number)
 	}
 	
 	qDebug() << modem;
-	qDebug() << modem.arguments();
+	qDebug() << modem.path();
 
 	/*const QDBusArgument &dbusArgs = */qDebug() << modem.arguments().first();//.value<QDBusArgument>();
 
