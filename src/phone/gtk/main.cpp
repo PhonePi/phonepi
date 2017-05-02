@@ -1,5 +1,4 @@
 #include "Phone.h"
-#include "Number.h"
 
 int main(int argc, char *argv[]) {
     Main kit(argc, argv);
