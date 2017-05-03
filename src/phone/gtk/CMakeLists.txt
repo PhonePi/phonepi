@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(phone)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES main.cpp Phone.cpp Phone.h Call.cpp Call.h lib.h)
+#set(SOURCE_FILES main.cpp Phone.cpp Phone.h Call.cpp Call.h lib.h)
+set(SOURCE_FILES main.cpp Phone.cpp Phone.h)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(PkgConfig REQUIRED)

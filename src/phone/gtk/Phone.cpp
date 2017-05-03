@@ -36,79 +36,91 @@ Phone::Phone() {
     labelGrid.attach(labelPhoneNumber, -1, 0, 1, 1);
     labelPhoneNumber.show();
 
-    int number = 0;
-    for(int i = 1; i < 5; i++)
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            char buffer[32];
-            //sprintf(buffer, "%s", captures[number++]);
-            Gtk::Image* button_image = &numbers[number]; 
-            Button* pButton = new Button();//Gtk::manage(new Gtk::ToggleButton(buffer));
-            pButton -> set_image(*button_image);
-            pButton -> set_size_request(60, 60);
-            pButton -> signal_clicked().connect(
-                            sigc::bind<string>(sigc::mem_fun
-                                    (
-                                           *this,
-                                           &Phone::buttonNumberClicked
-                                    ), captures[number])
-                    );
-            button_image -> show();
-            numbersGrid.attach(*pButton, j, i, 1, 1);
-            number++;
-        }
-    }
+    dialingNumbers();
 
-    Gtk::Image *clear_image=new Gtk::Image("../pics/buttons/erase.png"); 
-    Button* clearButton = new Button();
-    clearButton -> set_image(*clear_image);
-    clearButton -> set_size_request(60, 60);
-    clearButton -> signal_clicked().connect(
-            sigc::mem_fun
-                    (
-                            *this,
-                            &Phone::buttonClearClicked
-                    )
-    );
-    numbersGrid.attach(*clearButton, 0, 5, 1, 1);
-    clear_image -> show();
-
-    Gtk::Image *dial_image=new Gtk::Image("../pics/buttons/dial.png"); 
-    Button* dialButton = new Button();
-    dialButton -> set_image(*dial_image);
-    dialButton -> set_size_request(60, 60);
-    dialButton -> signal_clicked().connect(
-            sigc::mem_fun
-                    (
-                            *this,
-                            &Phone::buttonDialClicked
-                    )
-    );
-    numbersGrid.attach(*dialButton, 2, 5, 1, 1);
-    dial_image -> show();
 
     show_all_children();
 }
 
 Phone::~Phone(){}
 
-void Phone::buttonNumberClicked(string button){
+void Phone::buttonNumberClicked(std::string button){
     labelPhoneNumber.set_text(labelPhoneNumber.get_text() + button);
-
 }
 
-void Phone::buttonDialClicked() {
+void Phone::buttonDialClicked(std::string phoneNumber) {
     if(labelPhoneNumber.get_text().empty())
         return;
 
-    /*Передача номера по DBus. И отрисовка экрана звонка*/
-    //labelPhoneNumber.set_text("It's a moc");
-    hide();
-    Call call(this, labelPhoneNumber.get_text());
-    Main::run(call);
+    clearGrid(&labelGrid);
+    clearGrid(&numbersGrid);
+
+    labelGrid.set_size_request(480, 200);
+    labelGrid.override_background_color(Gdk::RGBA("blue"), Gtk::STATE_FLAG_NORMAL);
+    labelGrid.override_color(Gdk::RGBA("white"), Gtk::STATE_FLAG_NORMAL);
+    labelGrid.add(labelPhoneNumber);
+    labelPhoneNumber.set_text("Dialing: " + phoneNumber);
+
+    buttonCreate(new Gtk::Image("../pics/buttons/hang_up.png"), 1, 1,
+                 sigc::mem_fun
+                         (
+                                 *this,
+                                 &Phone::buttonClearClicked
+                         )
+    );
+    show_all_children();
 }
 
 void Phone::buttonClearClicked() {
     labelPhoneNumber.set_label(labelPhoneNumber.get_text().substr(0, labelPhoneNumber.get_text().length() - 1));
+}
+
+void Phone::dialingNumbers(){
+
+    int number = 0;
+    for(int i = 1; i < 5; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            buttonCreate(&numbers[number], j, i,
+                         sigc::bind<std::string>(sigc::mem_fun
+                                                    (
+                                                            *this,
+                                                            &Phone::buttonNumberClicked
+                                                    ), captures[number]));
+            number++;
+        }
+    }
+
+    buttonCreate(new Gtk::Image("../pics/buttons/erase.png"), 0, 5,
+                 sigc::mem_fun
+                         (
+                                 *this,
+                                 &Phone::buttonClearClicked
+                         )
+    );
+
+    buttonCreate(new Gtk::Image("../pics/buttons/dial.png"), 2, 5,
+                 sigc::bind<std::string>(sigc::mem_fun
+                         (
+                                 *this,
+                                 &Phone::buttonDialClicked
+                         ), labelPhoneNumber.get_text())
+    );
+}
+
+void Phone::buttonCreate(Gtk::Image* button_image, int row, int column,
+                         Glib::SignalProxy0<void>::SlotType func){
+    Gtk::Button* pButton = new Gtk::Button();
+    pButton -> set_image(*button_image);
+    pButton -> set_size_request(60, 60);
+    pButton -> signal_clicked().connect(func);
+    button_image -> show();
+    numbersGrid.attach(*pButton, row, column, 1, 1);
+}
+
+void Phone::clearGrid(Gtk::Grid* grid){
+    std::vector<Gtk::Widget*> label_children = grid -> get_children();
+    for (Gtk::Widget* child : label_children)
+        grid -> remove(*child);
 }

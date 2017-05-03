@@ -1,11 +1,15 @@
-#include "lib.h"
-#include "Call.h"
+#ifndef PHONE_H
+#define PHONE_H
 
-class Phone : public Window {
+#include <gtkmm.h>
+#include <vector>
+#include <string>
+
+class Phone : public Gtk::Window {
 protected:
-    Label labelPhoneNumber;
+    Gtk::Label labelPhoneNumber;
 
-    string captures [12] = {
+    std::string captures [12] = {
             "1",
             "2",
             "3",
@@ -20,30 +24,35 @@ protected:
             "#",
     };
 
-    Image numbers[12] = {
-        Image("../pics/numbers/1.png"),
-        Image("../pics/numbers/2.png"),
-        Image("../pics/numbers/3.png"),
-        Image("../pics/numbers/4.png"),
-        Image("../pics/numbers/5.png"),
-        Image("../pics/numbers/6.png"),
-        Image("../pics/numbers/7.png"),
-        Image("../pics/numbers/8.png"),
-        Image("../pics/numbers/9.png"),
-        Image("../pics/numbers/star.png"),
-        Image("../pics/numbers/0.png"),
-        Image("../pics/numbers/sharp.png"),
+    Gtk::Image numbers[12] = {
+            Gtk::Image("../pics/numbers/1.png"),
+            Gtk::Image("../pics/numbers/2.png"),
+            Gtk::Image("../pics/numbers/3.png"),
+            Gtk::Image("../pics/numbers/4.png"),
+            Gtk::Image("../pics/numbers/5.png"),
+            Gtk::Image("../pics/numbers/6.png"),
+            Gtk::Image("../pics/numbers/7.png"),
+            Gtk::Image("../pics/numbers/8.png"),
+            Gtk::Image("../pics/numbers/9.png"),
+            Gtk::Image("../pics/numbers/star.png"),
+            Gtk::Image("../pics/numbers/0.png"),
+            Gtk::Image("../pics/numbers/sharp.png"),
     };
 
-    Box gridBox;
-    Grid labelGrid;
-    Grid numbersGrid;
-
-    void buttonDialClicked();
+    void buttonDialClicked(std::string phoneNumber);
     void buttonClearClicked();
-    void buttonNumberClicked(string button);
+    void buttonNumberClicked(std::string button);
+    void buttonCreate(Gtk::Image* button_image, int row, int column,
+                      Glib::SignalProxy0<void>::SlotType func);
+    void dialingNumbers();
+    void clearGrid(Gtk::Grid* grid);
 
 public:
     Phone();
     ~Phone();
+    Gtk::Grid numbersGrid;
+    Gtk::Grid labelGrid;
+    Gtk::Box gridBox;
 };
+
+#endif //PHONE_H
