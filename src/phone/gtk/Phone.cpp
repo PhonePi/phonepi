@@ -20,6 +20,7 @@
  */
 
 #include "Phone.h"
+#include "QDBusCalls.h"
 
 Phone::Phone() {
     set_border_width(10);
@@ -38,7 +39,6 @@ Phone::Phone() {
 
     dialingNumbers();
 
-
     show_all_children();
 }
 
@@ -48,18 +48,23 @@ void Phone::buttonNumberClicked(std::string button){
     labelPhoneNumber.set_text(labelPhoneNumber.get_text() + button);
 }
 
-void Phone::buttonDialClicked(std::string phoneNumber) {
+void Phone::buttonDialClicked() {
     if(labelPhoneNumber.get_text().empty())
         return;
 
     clearGrid(&labelGrid);
     clearGrid(&numbersGrid);
 
+    QDBusCalls* qdbs = new QDBusCalls();
+
     labelGrid.set_size_request(480, 200);
     labelGrid.override_background_color(Gdk::RGBA("blue"), Gtk::STATE_FLAG_NORMAL);
     labelGrid.override_color(Gdk::RGBA("white"), Gtk::STATE_FLAG_NORMAL);
-    labelGrid.add(labelPhoneNumber);
-    labelPhoneNumber.set_text("Dialing: " + phoneNumber);
+    labelGrid.add(labelDialing);
+    Gtk::Label timer;
+    labelGrid.add(labelTimer);
+    labelPhoneNumber.set_text("Dialing: " + labelPhoneNumber.get_text());
+
 
     buttonCreate(new Gtk::Image("../pics/buttons/hang_up.png"), 1, 1,
                  sigc::mem_fun
@@ -69,10 +74,13 @@ void Phone::buttonDialClicked(std::string phoneNumber) {
                          )
     );
     show_all_children();
+
+    qdbs -> dialNumber(labelPhoneNumber.get_text());
 }
 
 void Phone::buttonClearClicked() {
-    labelPhoneNumber.set_label(labelPhoneNumber.get_text().substr(0, labelPhoneNumber.get_text().length() - 1));
+    labelPhoneNumber.set_label(labelPhoneNumber.get_text()
+                                       .substr(0, labelPhoneNumber.get_text().length() - 1));
 }
 
 void Phone::dialingNumbers(){
@@ -101,11 +109,11 @@ void Phone::dialingNumbers(){
     );
 
     buttonCreate(new Gtk::Image("../pics/buttons/dial.png"), 2, 5,
-                 sigc::bind<std::string>(sigc::mem_fun
+                 sigc::mem_fun
                          (
                                  *this,
                                  &Phone::buttonDialClicked
-                         ), labelPhoneNumber.get_text())
+                         )
     );
 }
 

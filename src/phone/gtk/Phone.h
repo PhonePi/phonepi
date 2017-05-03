@@ -1,13 +1,13 @@
-#ifndef PHONE_H
-#define PHONE_H
+#ifndef PHONE_PHONE_H
+#define PHONE_PHONE_H
 
-#include <gtkmm.h>
-#include <vector>
-#include <string>
+#include "lib.h"
 
 class Phone : public Gtk::Window {
 protected:
     Gtk::Label labelPhoneNumber;
+    Gtk::Label labelDialing;
+    Gtk::Label labelTimer;
 
     std::string captures [12] = {
             "1",
@@ -39,7 +39,7 @@ protected:
             Gtk::Image("../pics/numbers/sharp.png"),
     };
 
-    void buttonDialClicked(std::string phoneNumber);
+    void buttonDialClicked();
     void buttonClearClicked();
     void buttonNumberClicked(std::string button);
     void buttonCreate(Gtk::Image* button_image, int row, int column,
@@ -55,4 +55,4 @@ public:
     Gtk::Box gridBox;
 };
 
-#endif //PHONE_H
+#endif //PHONE_PHONE_H
