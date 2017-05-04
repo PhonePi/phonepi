@@ -64,11 +64,17 @@ void QDBusCalls::dialNumber(const char* phoneNumber) {
     number = phoneNumber;
     args.append(phoneNumber);
     args.append("");
-    QDBusMessage call_status = dbus_iface.asyncCallWithArgumentList("Dial", args);
-
+    QDBusMessage call_status = dbus_iface.callWithArgumentList(QDBus::BlockWithGui,
+                                                               "Dial", args);
     if(!isAnswerValid(call_status))
-        exit(1);
+        return;
 
-    //qDebug() << call_status;
+    bus.connect()
+}
+
+void QDBusCalls::hangup(){
+    QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
+    QDBusMessage msg = dbus_iface.call("HangupAll");
+    qDebug() << "Calls hanged up";
 }
 

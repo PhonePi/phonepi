@@ -36,7 +36,6 @@ Phone::Phone() {
     labelPhoneNumber.set_label("");
     labelGrid.attach(labelPhoneNumber, -1, 0, 1, 1);
     labelPhoneNumber.show();
-    labelPhoneNumber.set_text("89215773326");
 
     dialingNumbers();
 
@@ -58,20 +57,18 @@ void Phone::buttonDialClicked() {
 
     QDBusCalls* qdbs = new QDBusCalls();
 
-    labelGrid.set_size_request(480, 200);
     labelGrid.override_background_color(Gdk::RGBA("blue"), Gtk::STATE_FLAG_NORMAL);
     labelGrid.override_color(Gdk::RGBA("white"), Gtk::STATE_FLAG_NORMAL);
     labelGrid.add(labelDialing);
-    Gtk::Label timer;
     labelGrid.add(labelTimer);
-    labelPhoneNumber.set_text("Dialing: " + labelPhoneNumber.get_text());
+    labelDialing.set_text("Dialing: " + labelPhoneNumber.get_text());
 
 
     buttonCreate(new Gtk::Image("../pics/buttons/hang_up.png"), 1, 1,
                  sigc::mem_fun
                          (
                                  *this,
-                                 &Phone::buttonClearClicked
+                                 &Phone::buttonHangupClicked
                          )
     );
     show_all_children();
@@ -82,6 +79,22 @@ void Phone::buttonDialClicked() {
 void Phone::buttonClearClicked() {
     labelPhoneNumber.set_label(labelPhoneNumber.get_text()
                                        .substr(0, labelPhoneNumber.get_text().length() - 1));
+}
+
+void Phone::buttonHangupClicked(){
+    QDBusCalls qdbus;
+    qdbus.hangup();
+
+    clearGrid(&labelGrid);
+    clearGrid(&numbersGrid);
+
+    labelGrid.override_background_color(Gdk::RGBA(), Gtk::STATE_FLAG_NORMAL);
+    labelGrid.override_color(Gdk::RGBA("black"), Gtk::STATE_FLAG_NORMAL);
+    labelGrid.add(labelPhoneNumber);
+
+    dialingNumbers();
+
+    show_all_children();
 }
 
 void Phone::dialingNumbers(){

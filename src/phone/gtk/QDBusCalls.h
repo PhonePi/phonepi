@@ -20,9 +20,9 @@ private:
 
 public:
     QDBusCalls();
-    ~QDBusCalls();
+    //~QDBusCalls();
     void dialNumber(const char* phoneNumber);
-
+    void hangup();
 };
 
 

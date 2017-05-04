@@ -46,6 +46,7 @@ protected:
                       Glib::SignalProxy0<void>::SlotType func);
     void dialingNumbers();
     void clearGrid(Gtk::Grid* grid);
+    void buttonHangupClicked();
 
 public:
     Phone();
