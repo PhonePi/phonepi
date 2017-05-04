@@ -36,6 +36,7 @@ Phone::Phone() {
     labelPhoneNumber.set_label("");
     labelGrid.attach(labelPhoneNumber, -1, 0, 1, 1);
     labelPhoneNumber.show();
+    labelPhoneNumber.set_text("89215773326");
 
     dialingNumbers();
 
@@ -75,7 +76,7 @@ void Phone::buttonDialClicked() {
     );
     show_all_children();
 
-    qdbs -> dialNumber(labelPhoneNumber.get_text());
+    qdbs -> dialNumber(labelPhoneNumber.get_text().c_str());
 }
 
 void Phone::buttonClearClicked() {

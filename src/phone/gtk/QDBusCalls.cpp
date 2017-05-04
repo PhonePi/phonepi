@@ -54,17 +54,21 @@ void QDBusCalls::getModemAnswer(const QDBusArgument &dbusArgs) {
     qDebug() << selected_modem;
 }
 
-void QDBusCalls::dialNumber(std::string phoneNumber) {
+void QDBusCalls::dialNumber(const char* phoneNumber) {
     if(!bus.isConnected())
         exit(1);
 
-    QString number(phoneNumber.c_str());
-    qDebug() << number;
+    QVariant number(QVariant::String);
+    QList<QVariant>args;
     QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
-    QDBusMessage call_status = dbus_iface.call(QDBus::BlockWithGui, "Dial", number, QString("default"));
+    number = phoneNumber;
+    args.append(phoneNumber);
+    args.append("");
+    QDBusMessage call_status = dbus_iface.asyncCallWithArgumentList("Dial", args);
 
     if(!isAnswerValid(call_status))
         exit(1);
 
-    qDebug() << call_status;
+    //qDebug() << call_status;
 }
+

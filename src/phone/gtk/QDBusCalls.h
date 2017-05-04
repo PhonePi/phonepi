@@ -18,11 +18,10 @@ private:
     bool isAnswerValid(QDBusMessage msg);
     void getModemAnswer(const QDBusArgument &dbusArgs);
 
-
 public:
     QDBusCalls();
     ~QDBusCalls();
-    void dialNumber(std::string phoneNumber);
+    void dialNumber(const char* phoneNumber);
 
 };
 
