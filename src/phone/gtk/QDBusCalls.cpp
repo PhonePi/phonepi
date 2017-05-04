@@ -68,8 +68,6 @@ void QDBusCalls::dialNumber(const char* phoneNumber) {
                                                                "Dial", args);
     if(!isAnswerValid(call_status))
         return;
-
-    bus.connect()
 }
 
 void QDBusCalls::hangup(){
