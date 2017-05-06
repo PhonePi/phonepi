@@ -1,0 +1,18 @@
+[Unit]
+Description=Daemon for resyncing of system clock by RTC Timer DS3231
+After=timers.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+ExecStart=/home/pi/RTCsync.sh
+
+KillMode=process
+KillSignal=SIGTERM
+SendSIGKILL=yes
+TimeoutStartSec=5
+TimeoutStopSec=5
