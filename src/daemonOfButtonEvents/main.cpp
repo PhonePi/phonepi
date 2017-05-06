@@ -11,7 +11,6 @@
 #include <unistd.h>
 //#include <errno.h>
 #include <signal.h>
-//#include <sys/stat.h>		// "read/write/lseek"
 #include <pthread.h>
 
 #include "GPIOController.h"
@@ -32,11 +31,11 @@ using namespace std;
 
 
 int soundLvl = 100;			// in percents
-bool SIGTEMT_event = false;
+bool SIGTERM_event = false;
 
 void SIGTEMT_handler(int sig) {
     write(0,"\nSIGTERM signal!\n",32);
-    SIGTEMT_event = true;
+    SIGTERM_event = true;
 }
 
 
@@ -119,7 +118,7 @@ int main (void)
 			value = disBlockIn->getValueOnEvent(2900); // timeOut 2.9 sec
 
 			// checking the interruption
-			if (SIGTEMT_event) break;
+			if (SIGTERM_event) break;
 
 			// checking: is event or timeOut?
 			if (value != ACTIV_LVL) {
@@ -158,18 +157,20 @@ void *thrdSndCtrlFunction(void *arg) {
 		value = gpio->getValueOnEvent(3000); // timeOut 3 sec
 
 		// checking the interruption
-		if (SIGTEMT_event) break;
+		if (SIGTERM_event) break;
 
 		// checking: is event or timeOut?
 		if (value != ACTIV_LVL) continue;	  // it`s timeOut
 
 		// it`s event
 		if (gpio->getGpioNum() == GPIO_SND_INC) {
-			soundLvl + SENSITIVITY <= 100 ? soundLvl += SENSITIVITY : soundLvl = 100;
+			//soundLvl + SENSITIVITY <= 100 ? soundLvl += SENSITIVITY : soundLvl = 100;
+			soundLvl = 100;
 			cout << "+soundLvl: " << soundLvl << endl;
 		}
 		else {
-			soundLvl - SENSITIVITY > 0 ? soundLvl -= SENSITIVITY : soundLvl = 0;
+			soundLvl = 0;
+			//soundLvl - SENSITIVITY > 0 ? soundLvl -= SENSITIVITY : soundLvl = 0;
 			cout << "-soundLvl: " << soundLvl << endl;
 		}
 
