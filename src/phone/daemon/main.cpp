@@ -1,26 +1,20 @@
 #include <iostream>
 #include <QString>
 #include <QtDBus>
-#include <zconf.h>
-#include <sys/stat.h>
-#include <syslog.h>
+#include "Struct.h"
+#include "Handler.h"
 
 #define INFO 0
 #define ERROR -1
 
-typedef struct{
-    QString name;
-    QMap<QString, QVariant> porp_map;
-} Answer_struct;
-Q_DECLARE_METATYPE(Answer_struct)
-
 bool isAnswerValid(QDBusMessage);
 int callsMonitor(QDBusConnection, QString);
-std::vector<Answer_struct> getStructAnswer(const QDBusArgument&);
+bool isModemEnabled = false;
 void writeLog(const char*, int);
 
 int main() {
 
+    writeLog("Start calls daemon", INFO);
     QDBusConnection bus = QDBusConnection::systemBus();
 
     if(!bus.isConnected())
@@ -36,27 +30,37 @@ int main() {
     std::vector<Answer_struct> answers = getStructAnswer(dbusArgs);
     QString selected_modem;
 
+    printf("Answer size: %i", answers.size());
+
     if(answers.size() == 1)
         selected_modem = answers[0].name;
     else
         for(Answer_struct modem : answers)
-            if(modem.name.contains("sim900"))
+            if(modem.name.contains("sim900")){
                 selected_modem = modem.name;
+                isModemEnabled = modem.porp_map["Powered"].toBool();
+                writeLog("Modem powered: " + isModemEnabled, INFO);
+            }
+
 
     if(selected_modem.isNull() || selected_modem.isEmpty()) {
         writeLog("No modem was selected", ERROR);
         exit(1);
     }
 
+
     writeLog(strcat("Selected modem: ", selected_modem.toStdString().c_str()), INFO);
-    QDBusInterface enable_iface("org.ofono", selected_modem, "org.ofono.Modem", bus);
-    QDBusMessage modem_status = dbus_iface.call("SetProperty", QString("Powered"),
-                                                QVariant::fromValue(QDBusVariant("true")));
 
-    if(isAnswerValid(modem_status))
-        exit(1);
+    if(!isModemEnabled) {
+        QDBusInterface enable_iface("org.ofono", selected_modem, "org.ofono.Modem", bus);
+        QDBusMessage modem_status = dbus_iface.call("SetProperty", QString("Powered"),
+                                                    QVariant::fromValue(QDBusVariant("true")));
 
-    writeLog("Modem succesffuly enabled", INFO);
+        if (!isAnswerValid(modem_status))
+            exit(1);
+
+        writeLog("Modem succesffuly enabled", INFO);
+    }
 
     int pid = fork();
     if(pid == -1) {
@@ -80,60 +84,16 @@ int main() {
 
 bool isAnswerValid(QDBusMessage msg) {
     if(QDBusMessage::ErrorMessage == msg.type()){
-        writeLog(msg.errorMessage().toStdString().c_str(), ERROR);
+        printf(msg.errorMessage().toStdString().c_str());
         return false;
     }
     return true;
 }
 
-std::vector<Answer_struct> getStructAnswer(const QDBusArgument &dbusArgs) {
-    QString selected_modem;
-    Answer_struct answer_struct;
-    std::vector<Answer_struct> answers;
-    dbusArgs.beginArray();
-    while (!dbusArgs.atEnd()) {
-        dbusArgs.beginStructure();
-        if (dbusArgs.currentType() == 0)
-            dbusArgs >> answer_struct.name;
-        if (dbusArgs.currentType() == 4)
-            dbusArgs >> answer_struct.porp_map;
-        dbusArgs.endStructure();
-        answers.push_back(answer_struct);
-    }
-    dbusArgs.endArray();
-
-    return answers;
-}
-
 int callsMonitor(QDBusConnection bus, QString current_modem){
-    if(!bus.isConnected())
-        exit(1);
+    Handler* handler = new Handler(bus, current_modem);
 
-    QDBusInterface dbus_iface("org.ofono", current_modem, "org.ofono.VoiceCallManager", bus);
-    QDBusMessage calls = dbus_iface.call("GetCalls");
-
-    if(!isAnswerValid(calls)){
-        exit(1);
-    }
-
-
-
+    while(true){}
 }
-
-void writeLog(const char* message, int status) {
-    openlog("calls_daemon", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-
-    switch(status){
-        case ERROR:
-            syslog(LOG_ERR, message);
-            break;
-        case INFO:
-            syslog(LOG_INFO, message);
-            break;
-        default:
-            syslog(LOG_ALERT, message);
-            break;
-    }
-
-    closelog();
-}
+/*
+*/

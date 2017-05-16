@@ -3,11 +3,11 @@ project(daemon)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp Handler.cpp Handler.h Struct.h)
 
 find_package(PkgConfig REQUIRED)
 find_package (Qt5 CONFIG REQUIRED DBus)
 
-add_executable(daemon ${SOURCE_FILES})
+add_executable(calls_daemon ${SOURCE_FILES})
 
-target_link_libraries(daemon Qt5::DBus)
+target_link_libraries(calls_daemon Qt5::DBus)
