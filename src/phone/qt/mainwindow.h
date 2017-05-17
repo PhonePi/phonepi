@@ -8,27 +8,27 @@
 #include <QString>
 #include <QtDBus>
 
-typedef struct{
+struct Answer_struct{
     QString name;
     QMap<QString, QVariant> porp_map;
-} Parse_struct;
-Q_DECLARE_METATYPE(Parse_struct)
+};
+Q_DECLARE_METATYPE(Answer_struct)
 
 class MainWindow : public QQmlApplicationEngine{
     Q_OBJECT
-    
 public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
     void GetModem();
     void EnableModem();
-    //void TestConnection();
     void AnswerValidation(QDBusMessage msg);
     Q_INVOKABLE void DialNumber(QString number);
+    Q_INVOKABLE QString GetNumber();
 
 private:
     QDBusConnection bus = QDBusConnection::systemBus();
-    Parse_struct modem_struct;
     QString selected_modem;
+    QVariant isModemEnabled = "false";
+	QString dialedNumber;
 };
 #endif // MAINWINDOW_H

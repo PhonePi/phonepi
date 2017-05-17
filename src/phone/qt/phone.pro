@@ -5,7 +5,7 @@ HEADERS += mainwindow.h
 
 SOURCES += main.cpp mainwindow.cpp
 
-OTHER_FILES = main.qml dialing.qml
+OTHER_FILES = main.qml dialing.qml button.qml
 
 RESOURCES += res.qrc
 
