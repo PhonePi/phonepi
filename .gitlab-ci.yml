@@ -3,6 +3,8 @@ stages:
 
 sprint0:
   stage: build
+  only:
+    - master
   script: cd presentations/sprint0/; make
   artifacts:
     name: sprint0
@@ -11,6 +13,8 @@ sprint0:
 
 sprint1:
   stage: build
+  only:
+    - master
   script: cd presentations/sprint1/; make
   artifacts:
     name: sprint1
@@ -19,6 +23,8 @@ sprint1:
 
 oFonoSlides:
   stage: build
+  only:
+    - master
   script: cd presentations/OS\&Co/oFono; make
   artifacts:
     name: oFonoSlides
@@ -27,6 +33,8 @@ oFonoSlides:
 
 gpsSlides:
   stage: build
+  only:
+    - master
   script: cd presentations/OS\&Co/gps; make
   artifacts:
     name: gpsSlides
