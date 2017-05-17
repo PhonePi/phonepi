@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Window 2.0
+import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 
 Window{
@@ -7,23 +7,16 @@ Window{
 	height: 30
 	maximumHeight: 30
 	minimumHeight: 30
-	width: 480 
-	minimumWidth: 480
-	maximumWidth: 480
-	visible: true
+	width: Screen.width
+	maximumWidth: Screen.width 
+	minimumWidth: Screen.width
+ 	visible: true
 	color: "#cc241d"
 
 	MouseArea {
 		id: status
 		objectName: "status"
-		width: 120
-		height: 25
-		anchors {
-			left: parent.left
-			leftMargin: 180
-			top: parent.top
-			topMargin: 2
-		}
+		anchors.fill: parent
 		onPressed: status_text.color = "#000000"
 		onClicked: status_text.text = exec()
 		onReleased: status_text.color = "#ffffff"
@@ -35,7 +28,7 @@ Window{
             font.pixelSize: 20 
             color: "#ffffff"
             wrapMode: Text.WrapAnywhere
-            anchors.fill: parent
+			x: parent.width / 2 - parent.width / 8
 		}
 	}
 

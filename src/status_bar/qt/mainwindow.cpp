@@ -12,7 +12,7 @@ MainWindow::~MainWindow() {}
 
 
 QString MainWindow::execCom(){
-    const char* cmd = "echo lol";
+    const char* cmd = "date";
 	std::array<char,128> buffer;
 	QString result;
 	std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
