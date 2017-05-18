@@ -69,6 +69,7 @@ Window{
 				left: parent.left
 				leftMargin: parent.width * 0.07
 				rightMargin: parent.width * 0.07
+				topMargin: 50
 			}
 
 		Grid {
@@ -82,21 +83,21 @@ Window{
 					verticalCenter: parent.verticalCenter
 				}
 
-				Button {caption : "1"; width: parent.width/3 - 2 * numbers.spacing / 3 }
-				Button {caption : "2"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "3"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "1"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "2"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "3"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
 
-				Button {caption : "4"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "5"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "6"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "4"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "5"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "6"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
 
-				Button {caption : "7"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "8"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "9"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "7"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "8"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "9"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
 
-				Button {caption : "*"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "0"; width: parent.width/3 - 2 * numbers.spacing / 3}
-				Button {caption : "#"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "*"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "0"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "#"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
 			}
 		}
 

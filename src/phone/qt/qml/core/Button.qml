@@ -5,6 +5,7 @@ import QtQuick.Controls 1.4
 Rectangle {
 
 	property string caption: ""
+
 	id: button1
 	height: 50
 			
