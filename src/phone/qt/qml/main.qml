@@ -1,6 +1,7 @@
-import QtQuick 2.7
+import QtQuick 2.3
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
+import "core"
 
 Window{
 	id: phone
@@ -48,267 +49,87 @@ Window{
    	   	}
    	}
 
-Rectangle {
-	id: buttons
-	width: parent.width
-	height: 2 *  parent.height / 3
-	color: "#fbf1c7"
-	anchors{
-		bottom: parent.bottom
-	}
-	
-	Rectangle{
-		id: table
-		width: parent.width - parent.width * 0.0583 * 2
-		height: 206
-		color: "#282828"
-		
+	Rectangle {
+		id: buttons
+		width: parent.width
+		height: 2 *  parent.height / 3
+		color: "#fbf1c7"
 		anchors{
-			top: parent.top
-			left: parent.left
-			leftMargin: parent.width * 0.0583
-			rightMargin: parent.width * 0.0583
-		}
-
-		Column {
-			id: numbers
-			spacing: 2
-
-			Row{
-				spacing: 2
-				Button {caption : "1"; spacing: 2}
-				Button {caption : "2"; spacing: 2}
-				Button {caption : "3"; spacing: 2}
-			}
-
-			Row{
-				spacing: 2
-				Button {caption : "4"; spacing: 2}
-				Button {caption : "5"; spacing: 2}
-				Button {caption : "6"; spacing: 2}
-			}
-
-			Row{
-				spacing: 2
-				Button {caption : "7"; spacing: 2}
-				Button {caption : "8"; spacing: 2}
-				Button {caption : "9"; spacing: 2}
-			}
-
-			Row{
-				spacing: 2
-				Button {caption : "*"; spacing: 2}
-				Button {caption : "0"; spacing: 2}
-				Button {caption : "#"; spacing: 2}
-			}
-
-		}
-		}
-/*		Button {
-			id: button2
-			width: 100
-			height: 50
-			text: "2"
-
-			anchors{
-				top: parent.top
-				topMargin: 10
-				left: button1.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "2"
-		}
-
-		Button {
-			id: button3
-			width: 100
-			height: 50
-			text: "3"
-
-			anchors{
-				top: parent.top
-				topMargin: 10
-				left: button2.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "3"
-		}
-
-		Button {
-			id: button4
-			width: 100
-			height: 50
-			text: "4"
-
-			anchors{
-				top: button1.bottom
-				topMargin: 20
-				left: parent.left
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "4"
-		}
-
-		Button {
-			id: button5
-			width: 100
-			height: 50
-			text: "5"
-
-			anchors{
-				top: button2.bottom
-				topMargin: 20
-				left: button4.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "5"
-		}
-
-		Button {
-			id: button6
-			width: 100
-			height: 50
-			text: "6"
-
-			anchors{
-				top: button3.bottom
-				topMargin: 20
-				left: button5.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "6"
-		}
-
-		Button {
-			id: button7
-			width: 100
-			height: 50
-			text: "7"
-
-			anchors{
-				top: button4.bottom
-				topMargin: 20
-				left: parent.left
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "7"
+			bottom: parent.bottom
 		}
 		
-		Button {
-			id: button8
-			width: 100
-			height: 50
-			text: "8"
-
+	Rectangle{
+			id: table
+			width: parent.width - parent.width * 0.0583 * 2
+			height: 206
+			color: "#282828"
+			
 			anchors{
-				top: button5.bottom
-				topMargin: 20
-				left: button7.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "8"
-		}
-
-		Button {
-			id: button9
-			width: 100
-			height: 50
-			text: "9"
-
-			anchors{
-				top: button6.bottom
-				topMargin: 20
-				left: button8.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "9"
-		}
-
-		Button {
-			id: buttonStar
-			width: 100
-			height: 50
-			text: "*"
-
-			anchors{
-				top: button7.bottom
-				topMargin: 20
+				top: parent.top
 				left: parent.left
-				leftMargin: 40
+				leftMargin: parent.width * 0.0583
+				rightMargin: parent.width * 0.0583
 			}
 
-			onClicked: phoneNumber.text += "*"
-		}
+		Grid {
+				id: numbers
+				spacing: 2
+				columns: 3
+				width: parent.width
+				height: parent.height
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.verticalCenter: parent.verticalCenter
+				Button {caption : "1"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "2"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "3"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "4"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "5"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "6"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "7"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "8"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "9"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "*"; width: parent.width/3 - 2 * numbers.spacing }
+			
+/*				Rectangle {
+					id: button0
+					width: 100
+					height: 50
+					text: "0/+"
 
-
-		Button {
-			id: button0
-			width: 100
-			height: 50
-			text: "0/+"
-
-			anchors{
-				top: button8.bottom
-				topMargin: 20
-				left: buttonStar.right
-				leftMargin: 40
+					MouseArea {
+						anchors.fill: parent
+						onClicked: phoneNumber.text += "0"
+						onDoubleClicked: {
+							phoneNumber.text = phoneNumber.text.substr(0, phoneNumber.text.length-1)
+							phoneNumber.text += "+"
+						}
+					}
+				}*/
+				Button {caption : "0"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "#"; width: parent.width/3 - 2 * numbers.spacing }
 			}
-
-			MouseArea {
-				anchors.fill: parent
-				onClicked: phoneNumber.text += "0"
-				onDoubleClicked: {
-					phoneNumber.text = phoneNumber.text.substr(0, phoneNumber.text.length-1)
-					phoneNumber.text += "+"
-				}
-			}
-		}
-
-		Button {
-			id: buttonSharp
-			width: 100
-			height: 50
-			text: "#"
-
-			anchors{
-				top: button9.bottom
-				topMargin: 20
-				left: button0.right
-				leftMargin: 40
-			}
-
-			onClicked: phoneNumber.text += "#"
 		}
 
 		function dial(object){
 			window.DialNumber(object.text);
-		}*/
-
+		}
 
 		Image {
 			id: buttonDial
 			width: 70
 			height: 70
-    	    source: "qrc:///pics/dial.png"
+			source: "qrc:///pics/dial.png"
 
-    	    anchors {
-				top: buttonSharp.bottom
+			anchors {
+				top: table.bottom
 				topMargin: 35
 				left: parent.left
 				leftMargin: 200
 			}
 
-    	    MouseArea{
-    	    	anchors.fill: parent
-    	   		onClicked: {
+			MouseArea{
+				anchors.fill: parent
+				onClicked: {
 					dial(phoneNumber)
 				}
 			}

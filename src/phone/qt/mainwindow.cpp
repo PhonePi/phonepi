@@ -19,8 +19,8 @@ MainWindow::MainWindow(QObject *parent)
 	if(!bus.isConnected())
 		exit(1);
 	
-    GetModem();
-    EnableModem();
+//    GetModem();
+//    EnableModem();
 }
 
 MainWindow::~MainWindow()

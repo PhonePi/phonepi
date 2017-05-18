@@ -2,14 +2,10 @@ import QtQuick 2.0
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 
-
 Rectangle {
 
 	property string caption: ""
-	property int spacing: 1
-
 	id: button1
-	width: parent.width / 3 - 2 * spacing 
 	height: 50
 			
 	Text {
@@ -28,5 +24,10 @@ Rectangle {
 		opacity:1
 		anchors.fill: parent
 		onClicked: phoneNumber.text += caption
+		onDoubleClicked: {
+			if(caption != 0) return
+			phoneNumber.text = phoneNumber.text.substr(0, phoneNumber.text.length-1)
+			phoneNumber.text += "+"
+		}
 	}
 }
