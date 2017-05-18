@@ -7,13 +7,25 @@
 
 #include <QString>
 #include <QVariant>
+#include <QObject>
+#include <QDBusConnection>
 
 class Handler : public QObject{
+    Q_OBJECT
+
 public:
-    void callAdded(QString path, QMap<QString, QVariant> props);
+    Handler(QObject* parent = NULL) : QObject(parent){}
+    ~Handler();
+    //Handler(QDBusConnection, QString);
+    static QString phoneNumber;
+    void setUpHandler(QDBusConnection, QString);
+
+private Q_SLOTS:
+    void callAdded(const QString&, const QMap<QString, QVariant>&);
     void callRemoved(QString path);
-    Handler(QDBusConnection bus, QString current_modem);
-    QString phoneNumber;
+
+//signals:
+//    void callAdd(const QString&, const QMap<QString, QVariant>&);
 };
 
 
