@@ -7,7 +7,9 @@
 #include "Handler.h"
 #include "Struct.h"
 
-Handler::Handler(QDBusConnection bus, QString current_modem) {
+Handler::~Handler(){}
+
+void Handler::setUpHandler(QDBusConnection bus, QString current_modem){
     if(!bus.isConnected())
         exit(1);
 
@@ -18,26 +20,35 @@ Handler::Handler(QDBusConnection bus, QString current_modem) {
         exit(1);
     }
 
-    writeLog("Connection to the signals", INFO);
+    bool callAddedAnswer = bus.connect("org.ofono", current_modem,
+                                       "org.ofono.VoiceCallManager", "CallAdded", this,
+                                       SLOT(callAdded(const QString&, const QMap<QString,QVariant>&)));
+    bool callRemovedAnswer = bus.connect("org.ofono", current_modem,
+                                         "org.ofono.VoiceCallManager", "CallRemoved",
+                                         this, SLOT(callRemoved(QString)));
 
-    bus.connect("org.ofono", current_modem, "org.ofono.VoiceCallManager", "CallAdded",
-            this, SLOT(callAdded(QString, QMap<QString,QVariant>)));
-    bus.connect("org.ofono", current_modem, "org.ofono.VoiceCallManager", "CallRemoved",
-                this, SLOT(callRemoved(QString)));
+    if(!callRemovedAnswer){
+        writeLog("CallRemoved connection failed", ERROR);
+        exit(1);
+    }else
+	    writeLog("CallRemoved connection succeed", INFO);
+
+    if(!callAddedAnswer){
+        writeLog("CallAdded connection failed", ERROR);
+        exit(1);
+    }else
+	    writeLog("CallAdded connection succeed", INFO);
+
+    while(true){}
 }
 
-void Handler::callAdded(QString path, QMap<QString, QVariant> props) {
+void Handler::callAdded(const QString& path, const QMap<QString, QVariant>& props) {
     writeLog("callAdded SLOT", INFO);
-    QVariant number = props[QString("LineIdentification")];
     if(props["State"].toString().contains("incoming"))
-        writeLog("Incoming call", INFO);
-
-    phoneNumber = number.toString();
+        writeLog("Incoming call from " + props[QString("LineIdentification")]
+                                                 .toString().toLatin1(), INFO);
 }
 
 void Handler::callRemoved(QString path){
     writeLog("callRemoved SLOT", INFO);
-    writeLog("Call was removed SLOT", INFO);
-
 }
-
