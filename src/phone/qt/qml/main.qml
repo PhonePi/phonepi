@@ -60,53 +60,43 @@ Window{
 		
 	Rectangle{
 			id: table
-			width: parent.width - parent.width * 0.0583 * 2
+			width: parent.width - parent.width * 0.07 * 2
 			height: 206
 			color: "#282828"
 			
 			anchors{
 				top: parent.top
 				left: parent.left
-				leftMargin: parent.width * 0.0583
-				rightMargin: parent.width * 0.0583
+				leftMargin: parent.width * 0.07
+				rightMargin: parent.width * 0.07
 			}
 
 		Grid {
 				id: numbers
-				spacing: 2
+				spacing: 2 
 				columns: 3
 				width: parent.width
 				height: parent.height
-				anchors.horizontalCenter: parent.horizontalCenter
-				anchors.verticalCenter: parent.verticalCenter
-				Button {caption : "1"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "2"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "3"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "4"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "5"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "6"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "7"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "8"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "9"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "*"; width: parent.width/3 - 2 * numbers.spacing }
-			
-/*				Rectangle {
-					id: button0
-					width: 100
-					height: 50
-					text: "0/+"
+				anchors{
+					horizontalCenter: parent.horizontalCenter
+					verticalCenter: parent.verticalCenter
+				}
 
-					MouseArea {
-						anchors.fill: parent
-						onClicked: phoneNumber.text += "0"
-						onDoubleClicked: {
-							phoneNumber.text = phoneNumber.text.substr(0, phoneNumber.text.length-1)
-							phoneNumber.text += "+"
-						}
-					}
-				}*/
-				Button {caption : "0"; width: parent.width/3 - 2 * numbers.spacing }
-				Button {caption : "#"; width: parent.width/3 - 2 * numbers.spacing }
+				Button {caption : "1"; width: parent.width/3 - 2 * numbers.spacing / 3 }
+				Button {caption : "2"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "3"; width: parent.width/3 - 2 * numbers.spacing / 3}
+
+				Button {caption : "4"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "5"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "6"; width: parent.width/3 - 2 * numbers.spacing / 3}
+
+				Button {caption : "7"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "8"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "9"; width: parent.width/3 - 2 * numbers.spacing / 3}
+
+				Button {caption : "*"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "0"; width: parent.width/3 - 2 * numbers.spacing / 3}
+				Button {caption : "#"; width: parent.width/3 - 2 * numbers.spacing / 3}
 			}
 		}
 
