@@ -13,28 +13,54 @@ Window{
 	minimumWidth: Screen.width
  	visible: true
 	color: "#cc241d"
-	x: 0
-	y: 0
 
 	Text {
-	    id: status_text
-	    objectName: "status_text"
+	    id: time
+	    objectName: "time"
 	    text:Qt.formatTime(new Date, "hh:mm:ss") 
         font.pixelSize: 20 
         color: "#ffffff"
         wrapMode: Text.WrapAnywhere
-		x: parent.width / 2 - parent.width / 8
+		anchors{
+			left: parent.left
+			leftMargin: parent.width / 2 - time.width
+			horizontalCenter: parent.HorizontalCenter
+			verticalCenter: parent.verticalCenter
+		}
 	}
 
-	function date(){
-		window.setValue()
+	Text {
+		id: battery
+		objectName: "battery"
+		font.pixelSize: 20 
+		text: "batt"
+		anchors {
+			right: parent.right
+			horizontalCenter: parent.HorizontalCenter
+			verticalCenter: parent.verticalCenter
+		}
+	}
+
+	function getTime(){
+		status.getTime()
+	}
+
+	function getBatteryState(){
+		status.getBatteryState()
+	}
+
+	Timer {
+		interval: 10000
+		running: true
+		repeat: true
+		onTriggered: getBatteryState()
 	}
 
 	Timer {
 		interval: 1000
 		running: true
 		repeat: true
-		onTriggered: date()
+		onTriggered: getTime()
 	}
 
 }

@@ -14,9 +14,10 @@ class MainWindow : public QQmlApplicationEngine{
 public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
-	Q_INVOKABLE void setValue();
+	Q_INVOKABLE void getTime ();
+	Q_INVOKABLE void getBatteryState();
 
 private:
-	QObject* object;
+	QList<QObject*> objectList;
 };
 #endif // MAINWINDOW_H
