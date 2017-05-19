@@ -10,12 +10,13 @@
 #include <QObject>
 
 class MainWindow : public QQmlApplicationEngine{
-Q_OBJECT
-
+	Q_OBJECT
 public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
-	Q_INVOKABLE QString execCom();
+	Q_INVOKABLE void setValue();
 
+private:
+	QObject* object;
 };
 #endif // MAINWINDOW_H
