@@ -14,18 +14,16 @@ class Handler : public QObject{
     Q_OBJECT
 
 public:
-    Handler(QObject* parent = NULL) : QObject(parent){}
+    Handler(QObject* parent = NULL);
     ~Handler();
     //Handler(QDBusConnection, QString);
     static QString phoneNumber;
     void setUpHandler(QDBusConnection, QString);
 
-private Q_SLOTS:
+public Q_SLOTS:
     void callAdded(const QString&, const QMap<QString, QVariant>&);
     void callRemoved(QString path);
 
-//signals:
-//    void callAdd(const QString&, const QMap<QString, QVariant>&);
 };
 
 

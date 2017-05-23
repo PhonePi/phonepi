@@ -6,6 +6,9 @@
 #include <QDBusInterface>
 #include "Handler.h"
 #include "Struct.h"
+#include "OfonoVoiceCallManagerAdaptor.h"
+
+Handler::Handler(QObject *parent): QObject(parent){}
 
 Handler::~Handler(){}
 
@@ -13,14 +16,21 @@ void Handler::setUpHandler(QDBusConnection bus, QString current_modem){
     if(!bus.isConnected())
         exit(1);
 
-    QDBusInterface dbus_iface("org.ofono", current_modem, "org.ofono.VoiceCallManager", bus);
-    QDBusMessage calls = dbus_iface.call("GetCalls");
 
-    if(QDBusMessage::ErrorMessage == calls.type()){
-        exit(1);
-    }
+    bus.registerObject("/", this);
+    VoiceCallManagerAdaptor voiceCall(this);
+    //OrgOfonoVoiceCallManagerInterface m_voicecall("org.ofono",current_modem, bus);
+    //QDBusInterface dbus_iface("org.ofono", current_modem, "org.ofono.VoiceCallManager", bus);
+    //QDBusMessage calls = dbus_iface.call("GetCalls");
+    //auto calls = m_voicecall.GetCalls();
+    voiceCall.GetCalls();
 
-    bool callAddedAnswer = bus.connect("org.ofono", current_modem,
+
+
+    //m_voicecall.connect(&m_voicecall, SIGNAL(CallAdded(const QString&, const QVariantMap&)),
+      //      this, SLOT(callAdded(const QString&, const QMap<QString,QVariant>&)));
+
+    /*bool callAddedAnswer = bus.connect("org.ofono", current_modem,
                                        "org.ofono.VoiceCallManager", "CallAdded", this,
                                        SLOT(callAdded(const QString&, const QMap<QString,QVariant>&)));
     bool callRemovedAnswer = bus.connect("org.ofono", current_modem,
@@ -37,7 +47,8 @@ void Handler::setUpHandler(QDBusConnection bus, QString current_modem){
         writeLog("CallAdded connection failed", ERROR);
         exit(1);
     }else
-	    writeLog("CallAdded connection succeed", INFO);
+	    writeLog("CallAdded connection succeed", INFO);*/
+    writeLog("Write log", INFO);
 
     while(true){}
 }
