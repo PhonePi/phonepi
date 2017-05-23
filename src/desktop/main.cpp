@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
         // connecting button with handler
         QObject::connect(btn, SIGNAL(clicked()), handlers.back(), SLOT(execute()));
         // adding button to cell layout
+        btn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         vbox->addWidget(btn);
 
         // creating label for button
@@ -57,6 +58,8 @@ int main(int argc, char *argv[]) {
         font.setPointSize(config.getFontSize());
         font.setBold(true);
         lbl->setFont(font);
+        lbl->setMinimumWidth(btn->size().width());
+        lbl->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         vbox->addWidget(lbl);
 
         // adding cell layout to grid layout
