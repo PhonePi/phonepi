@@ -1,0 +1,31 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+	<interface name="org.ofono.VoiceCallManager">
+		<method name="GetProperties">
+			<annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
+			<arg name="properties" type="a{sv}" direction="out"/>
+		</method>
+		<method name="Dial">
+			<arg name="number" type="s" direction="in"/>
+			<arg name="hide_callerid" type="s" direction="in"/>
+			<arg name="path" type="o" direction="out"/>
+		</method>
+		<method name="GetCalls">
+			<annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QList<QPair<QDBusObjectPath,QList<QVariantMap> > >"/>
+			<arg name="calls_with_properties" type="a(oa{sv})" direction="out"/>
+		</method>
+		<signal name="PropertyChanged">
+			<arg name="name" type="s"/>
+			<arg name="value" type="v"/>
+		</signal>
+		<signal name="CallAdded">
+                        <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
+			<arg name="path" type="o"/>
+			<arg name="properties" type="a{sv}"/>
+		</signal>
+		<signal name="CallRemoved">
+			<arg name="path" type="o"/>
+		</signal>
+	</interface>
+</node>
