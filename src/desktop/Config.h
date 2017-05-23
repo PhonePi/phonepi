@@ -12,6 +12,7 @@
 struct Applicaton {
     std::string name;
     std::string icon;
+    std::string path;
     std::string executable;
 };
 

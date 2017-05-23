@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
     std::vector<AppRunner*> handlers;
 
     for (auto&& app : config.getApplications()) {
-
         // vertival layout for gred cell
         QVBoxLayout* vbox = new QVBoxLayout;
 

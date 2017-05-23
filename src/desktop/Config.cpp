@@ -35,14 +35,19 @@ std::vector<Applicaton> Config::getApplications() {
     while ((ent = readdir (dir)) != NULL) {
         if (ent->d_type == DT_REG) {
             std::string filename(ent->d_name);
-            if (not ends_with(filename, ".entry")) continue;
+            if (not ends_with(filename, ".desktop")) continue;
 
             INIReader entryconf(directory.filePath(QString(filename.c_str())).toStdString());
-            std::string icon = entryconf.Get("entry", "icon", "");
-            std::string name = entryconf.Get("entry", "name", "");
-            std::string executable = entryconf.Get("entry", "exe", "");
-            if (not executable.empty())
-                apps.push_back({name, icon, executable});
+            std::string type = entryconf.Get("Desktop Entry", "Type", "Application");
+            if (type != "Application") continue;
+
+            Applicaton app;
+            app.icon = entryconf.Get("Desktop Entry", "Icon", "");
+            app.name = entryconf.Get("Desktop Entry", "Name", "");
+            app.path = entryconf.Get("Desktop Entry", "Path", "");
+            app.executable = entryconf.Get("Desktop Entry", "Exec", "");
+            if (not (app.executable.empty() || app.name.empty() || app.icon.empty()))
+                apps.push_back(app);
         }
     }
     closedir (dir);
