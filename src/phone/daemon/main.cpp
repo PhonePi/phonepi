@@ -3,6 +3,7 @@
 #include <QtDBus>
 #include "Struct.h"
 #include "Handler.h"
+#include "OfonoModem.h"
 
 #define INFO 0
 #define ERROR -1
@@ -58,17 +59,18 @@ int main() {
     writeLog("Selected modem: " + selected_modem.toLatin1(), INFO);
 
     if(isModemEnabled == "false") {
-        QList<QVariant> args;
-        QDBusInterface enable_iface("org.ofono", selected_modem, "org.ofono.Modem", bus);
-        args.append("Powered");
-        args.append(QVariant::fromValue(QDBusVariant("true")));
-        QDBusMessage modem_status = dbus_iface.callWithArgumentList(QDBus::BlockWithGui,
-                                                                    "SetProperty", args);
+        OrgOfonoModemInterface ofono("org.ofono", selected_modem, bus);
+        auto reply = ofono.SetProperty("Powered", QDBusVariant(true));
 
-        if (!isAnswerValid(modem_status))
+        reply.waitForFinished();
+
+        if(reply.isError()){
+            writeLog(reply.error().name().toLatin1(), ERROR);
             exit(1);
-
-        writeLog("Modem succesffuly enabled", INFO);
+        }
+        if(reply.isValid()) {
+            writeLog("Modem succesffuly enabled", INFO);
+        }
     }
 
     int pid = fork();
@@ -77,6 +79,7 @@ int main() {
         return -1;
     }
     else if(!pid){
+        writeLog("Daemon lauched", INFO);
         umask(0);
         setsid();
         chdir("/");
