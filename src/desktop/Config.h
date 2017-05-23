@@ -25,6 +25,8 @@ public:
     Config(const std::string conffile);
 
     int getIconsize();
+    int getFontSize();
+    std::string getFontColor();
     int getDesktopRows();
     int getDesktopColumns();
     std::string getBackgroung();

@@ -16,7 +16,7 @@ find_package(Qt REQUIRED)
 add_subdirectory(inih)
 include_directories(inih/cpp)
 
-add_executable(desktop main.cpp Config.cpp)
+add_executable(desktop main.cpp Config.cpp AppRunner.cpp)
 target_link_libraries(desktop inih)
 
 qt5_use_modules(desktop Widgets)

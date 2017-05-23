@@ -60,3 +60,11 @@ int Config::getDesktopRows() {
 int Config::getDesktopColumns() {
     return (int)conf_.GetInteger("desktop", "columns", 4);
 }
+
+int Config::getFontSize() {
+    return (int)conf_.GetInteger("desktop", "fontsize", 16);
+}
+
+std::string Config::getFontColor() {
+    return conf_.Get("desktop", "fontcolor", "White");
+}
