@@ -9,6 +9,7 @@
 #include <QVariant>
 #include <QObject>
 #include <QDBusConnection>
+#include <QtDBus/QtDBus>
 
 class Handler : public QObject{
     Q_OBJECT
@@ -16,13 +17,15 @@ class Handler : public QObject{
 public:
     Handler(QObject* parent = NULL);
     ~Handler();
-    //Handler(QDBusConnection, QString);
     static QString phoneNumber;
     void setUpHandler(QDBusConnection, QString);
 
 public Q_SLOTS:
-    void callAdded(const QString&, const QMap<QString, QVariant>&);
+    void callAdded(const QDBusObjectPath& path, const QVariantMap& props);
     void callRemoved(QString path);
+
+Q_SIGNALS:
+    void CallAdded(const QDBusObjectPath& path, const QVariantMap& props);
 
 };
 
