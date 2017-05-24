@@ -17,9 +17,10 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
+#include "VoiceCallManager.h"
 
 /*
- * Implementation of adaptor class VoiceCallManagerAdaptor
+ * Implementation of adaptorO class VoiceCallManagerAdaptor
  */
 
 VoiceCallManagerAdaptor::VoiceCallManagerAdaptor(QObject *parent)
@@ -27,8 +28,6 @@ VoiceCallManagerAdaptor::VoiceCallManagerAdaptor(QObject *parent)
 {
     // constructor
     setAutoRelaySignals(true);
-    QDBusConnection::sessionBus().connect(QString(), QString(), "org.ofono.VoiceCallManager", "CallAdded", this, SLOT(CallAddedSlot(QDBusObjectPath,QVariantMap)));
-    writeLog("VoiceCallManagerAdaptor | Constructor", INFO);
 
 }
 
@@ -39,7 +38,7 @@ VoiceCallManagerAdaptor::~VoiceCallManagerAdaptor()
 
 void VoiceCallManagerAdaptor::CallAddedSlot(const QDBusObjectPath& path, const QVariantMap& properties)
 {
-    writeLog("VoiceCallManagerAdaptor | CallAddedSlot", INFO);
+
 }
 
 QDBusObjectPath VoiceCallManagerAdaptor::Dial(const QString &number, const QString &hide_callerid)
