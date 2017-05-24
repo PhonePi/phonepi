@@ -4,11 +4,13 @@ CONFIG += c++11 qtquickcompiler warn_off
 
 HEADERS += Handler.h Struct.h \
         OfonoModem.h OfonoVoiceCallManagerAdaptor.h \
+		VoiceCallManager.h \
 
 SOURCES += main.cpp \
     Handler.cpp \
     OfonoModem.cpp \
     OfonoVoiceCallManagerAdaptor.cpp \
+	VoiceCallManager.cpp \
 
 
 
