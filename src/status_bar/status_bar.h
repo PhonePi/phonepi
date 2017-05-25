@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef STATUSBAR_H
+#define STATUSBAR_H
 
 #include <QtCore/QUrl>
 #include <QtQml/QQmlApplicationEngine>
@@ -20,4 +20,4 @@ public:
 private:
 	QList<QObject*> objectList;
 };
-#endif // MAINWINDOW_H
+#endif // STATUSBAR_H

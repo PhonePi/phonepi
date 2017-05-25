@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "status_bar.h"
 
 int main(int argc, char *argv[])
 {

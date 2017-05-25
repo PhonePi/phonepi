@@ -1,9 +1,9 @@
 QT += gui qml quick core dbus widgets
 CONFIG += c++11 qtquickcompiler
 
-HEADERS += mainwindow.h
+HEADERS += status_bar.h
 
-SOURCES += main.cpp mainwindow.cpp
+SOURCES += main.cpp status_bar.cpp
 
 OTHER_FILES = main.qml
 

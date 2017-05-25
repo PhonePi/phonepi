@@ -12,7 +12,7 @@ Window{
 	maximumWidth: Screen.width 
 	minimumWidth: Screen.width
  	visible: true
-	color: "#cc241d"
+	color: "#1d2021"
 
 	Text {
 	    id: time
@@ -36,6 +36,7 @@ Window{
 		text: "batt"
 		anchors {
 			right: parent.right
+			rightMargin: 20
 			horizontalCenter: parent.HorizontalCenter
 			verticalCenter: parent.verticalCenter
 		}
