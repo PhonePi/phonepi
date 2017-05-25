@@ -5,9 +5,11 @@ import QtQuick.Controls 1.4
 Rectangle {
 
 	property string caption: ""
+	property int spacing
 
 	id: button1
-	height: 50
+	width: parent.width / 3 - 2 * spacing / 3
+	height: parent.height / 4 - 3 * spacing / 4
 			
 	Text {
 		renderType: Text.NativeRendering

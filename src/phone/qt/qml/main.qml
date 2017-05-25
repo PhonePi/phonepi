@@ -8,27 +8,11 @@ Window{
 	height: Screen.height
 	maximumHeight: Screen.height
 	minimumHeight: Screen.height
-	width: 480 
-	minimumWidth: 480
-	maximumWidth: 480
+	width:  Screen.width
+	minimumWidth: Screen.width
+	maximumWidth: Screen.width
 	title: "Phone"
 	visible: true
-
-	Text {
-		id: phoneNumber
-		objectName: "number"
-		text: ""
-		font.pixelSize: 30
-		width: 360
-		height: 120
-		wrapMode: Text.WrapAnywhere
-		anchors {
-			left: parent.left
-			leftMargin: 10
-			top: parent.top
-			topMargin: 20
-		}
-	}
 
 	Image {
 		id: buttonDelete
@@ -39,15 +23,31 @@ Window{
    	    anchors{
 			top: parent.top
 			topMargin: 20
-			left: phoneNumber.right
-			leftMargin: 10
+			right: parent.right
+			rightMargin: 10
 		}
 
    	    MouseArea{
    	    	anchors.fill: parent
-   	   		onClicked: phoneNumber.text = phoneNumber.text.substr(0, phoneNumber.text.length-1)
+   	   		onClicked: phoneNumber.text = phoneNumber.text.substr(0, phoneNumber.text.length - 1)
    	   	}
    	}
+
+	Text {
+		id: phoneNumber
+		objectName: "number"
+		text: ""
+		font.pixelSize: 30
+		wrapMode: Text.WrapAnywhere
+		anchors {
+			left: parent.left
+			leftMargin: 10
+			right: buttonDelete.left
+			rightMargin: 10
+			top: parent.top
+			topMargin: 20
+		}
+	}
 
 	Rectangle {
 		id: buttons
@@ -61,7 +61,7 @@ Window{
 	Rectangle{
 			id: table
 			width: parent.width - parent.width * 0.07 * 2
-			height: 206
+			height: parent.height / 2 
 			color: "#282828"
 			
 			anchors{
@@ -69,10 +69,10 @@ Window{
 				left: parent.left
 				leftMargin: parent.width * 0.07
 				rightMargin: parent.width * 0.07
-				topMargin: 50
+				topMargin: height / 3 
 			}
 
-		Grid {
+			Grid {
 				id: numbers
 				spacing: 2 
 				columns: 3
@@ -83,21 +83,21 @@ Window{
 					verticalCenter: parent.verticalCenter
 				}
 
-				Button {caption : "1"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "2"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "3"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "1"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "2"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "3"; spacing: parent.spacing; color: buttons.color}
 
-				Button {caption : "4"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "5"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "6"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "4"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "5"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "6"; spacing: parent.spacing; color: buttons.color}
 
-				Button {caption : "7"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "8"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "9"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "7"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "8"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "9"; spacing: parent.spacing; color: buttons.color}
 
-				Button {caption : "*"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "0"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
-				Button {caption : "#"; width: parent.width/3 - 2 * numbers.spacing / 3; color: buttons.color}
+				Button {caption : "*"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "0"; spacing: parent.spacing; color: buttons.color}
+				Button {caption : "#"; spacing: parent.spacing; color: buttons.color}
 			}
 		}
 
@@ -113,9 +113,9 @@ Window{
 
 			anchors {
 				top: table.bottom
-				topMargin: 35
-				left: parent.left
-				leftMargin: 200
+				topMargin: height / 2
+				horizontalCenter: parent.horizontalCenter
+				verticalCenter: parent.varticalCenter
 			}
 
 			MouseArea{
