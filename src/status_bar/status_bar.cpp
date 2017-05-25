@@ -13,6 +13,7 @@ MainWindow::MainWindow(QObject *parent)
     rootContext()->setContextProperty("status", this);
 	objectList = this->rootObjects();
 	getBatteryState();
+	getOperatorName();
 }
 MainWindow::~MainWindow() {}
 
@@ -54,5 +55,19 @@ void MainWindow::getBatteryState(){
 		object->setProperty("text", "");		
 		object->setProperty("color","white");	
 	}
+}
+
+void MainWindow::getOperatorName(){
+	QObject* object =  objectList[0]->findChild<QObject*>("operator");
+	FILE *in;
+    char operatorName[512];
+    if(!(in = popen("cat ~/operator.txt", "r")))
+        exit(1);
+
+    fgets(operatorName, sizeof(operatorName), in);
+	
+	pclose(in);
+	
+	object->setProperty("text", operatorName);		
 }
 

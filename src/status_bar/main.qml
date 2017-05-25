@@ -15,6 +15,20 @@ Window{
 	color: "#1d2021"
 
 	Text {
+	    id: operator
+	    objectName: "operator"
+        font.pixelSize: 15 
+        color: "#ffffff"
+        wrapMode: Text.WrapAnywhere
+		anchors{
+			left: parent.left
+			leftMargin: 20 
+			horizontalCenter: parent.HorizontalCenter
+			verticalCenter: parent.verticalCenter
+		}
+	}
+
+	Text {
 	    id: time
 	    objectName: "time"
 	    text:Qt.formatTime(new Date, "hh:mm:ss") 
@@ -50,6 +64,10 @@ Window{
 		status.getBatteryState()
 	}
 
+	function getOperatorName(){
+		status.getOperatorName()
+	}
+
 	Timer {
 		interval: 10000
 		running: true
@@ -63,5 +81,4 @@ Window{
 		repeat: true
 		onTriggered: getTime()
 	}
-
 }

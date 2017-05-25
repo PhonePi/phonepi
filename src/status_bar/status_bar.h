@@ -16,6 +16,7 @@ public:
     ~MainWindow();
 	Q_INVOKABLE void getTime ();
 	Q_INVOKABLE void getBatteryState();
+	Q_INVOKABLE void getOperatorName();
 
 private:
 	QList<QObject*> objectList;
