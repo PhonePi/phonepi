@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Phone
+Comment=Flash card based learning tool
+Path=/home/kivi/workspace/Phone/src/phone/qt/
+Exec=phone
+Icon=/home/kivi/workspace/Phone/src/desktop/entries/phoneicon.ico
