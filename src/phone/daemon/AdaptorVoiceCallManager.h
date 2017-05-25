@@ -39,9 +39,8 @@ public:
     VoiceCallManagerAdaptor(QObject *parent);
     virtual ~VoiceCallManagerAdaptor();
 
-public: // PROPERTIES
-public Q_SLOTS: // METHODS
-Q_SIGNALS: // SIGNALS
+public Q_SLOTS:
+Q_SIGNALS:
     void CallAdded(const QDBusObjectPath &path, const QVariantMap &properties);
     void CallRemoved(const QDBusObjectPath &path);
     void PropertyChanged(const QString &name, const QDBusVariant &value);

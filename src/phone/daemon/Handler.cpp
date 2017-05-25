@@ -1,7 +1,3 @@
-//
-// Created by arseny on 15.05.17.
-//
-
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QtCore/QMetaObject>
@@ -24,10 +20,7 @@ void Handler::setUpHandler(QDBusConnection bus, QString current_modem){
     if(!bus.isConnected())
         exit(1);
 
-    //voiceCall->blockSignals(false);
-    //voiceCall->GetCalls();
-
-    QDBusInterface dbus_iface("org.ofono", "/sim900_0", "org.ofono.VoiceCallManager", bus);
+    QDBusInterface dbus_iface("org.ofono", current_modem, "org.ofono.VoiceCallManager", bus);
     QDBusMessage calls = dbus_iface.call("GetCalls");
 
     if(QDBusMessage::ErrorMessage == calls.type()){

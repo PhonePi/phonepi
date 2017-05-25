@@ -1,9 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <QString>
 #include <QtDBus>
 #include "Struct.h"
 #include "Handler.h"
 #include "OfonoModem.h"
+#include "NetworkRegistration.h"
 
 #define INFO 0
 #define ERROR -1
@@ -72,6 +74,20 @@ int main() {
             writeLog("Modem succesffuly enabled", INFO);
         }
     }
+
+    OrgOfonoNetworkRegistrationInterface network("org.ofono", selected_modem, bus);
+    auto reply = network.GetOperators().argumentAt(0).value<QDBusArgument>();
+    answers = getStructAnswer(reply);
+    QString networkOperator;
+    for(Answer_struct answer : answers)
+        networkOperator = answer.porp_map["Name"].toString();
+
+    std::ofstream operName;
+    operName.open("~//operator.txt");
+    operName << networkOperator.toStdString();
+    operName.close();
+
+    qDebug() << "Operator: " << networkOperator;
 
     int pid = fork();
     if(pid == -1) {

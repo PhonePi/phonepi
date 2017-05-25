@@ -6,6 +6,7 @@
     </interface>
     <interface name="org.ofono.Modem">
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <method name="SetProperty">
@@ -19,6 +20,7 @@
     </interface>
     <interface name="org.ofono.SimManager">
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <method name="SetProperty">
@@ -58,21 +60,26 @@
     </interface>
     <interface name="org.ofono.NetworkTime">
         <method name="GetNetworkTime">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="time" type="a{sv}" direction="out" />
         </method>
         <signal name="NetworkTimeChanged">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="time" type="a{sv}" />
         </signal>
     </interface>
     <interface name="org.ofono.NetworkRegistration">
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <method name="Register"></method>
         <method name="GetOperators">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QList<QPair<QDBusObjectPath,QList<QVariantMap> > >"/>
             <arg name="operators_with_properties" type="a(oa{sv})" direction="out" />
         </method>
         <method name="Scan">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QList<QPair<QDBusObjectPath,QList<QVariantMap> > >"/>
             <arg name="operators_with_properties" type="a(oa{sv})" direction="out" />
         </method>
         <signal name="PropertyChanged">
@@ -92,6 +99,7 @@
         </method>
         <method name="Cancel"></method>
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <signal name="NotificationReceived">
@@ -107,6 +115,7 @@
     </interface>
     <interface name="org.ofono.ConnectionManager">
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <method name="SetProperty">
@@ -122,6 +131,7 @@
         </method>
         <method name="DeactivateAll"></method>
         <method name="GetContexts">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QList<QPair<QDBusObjectPath,QList<QVariantMap> > >"/>
             <arg name="contexts_with_properties" type="a(oa{sv})" direction="out" />
         </method>
         <method name="ResetContexts"></method>
@@ -166,6 +176,7 @@
     </interface>
     <interface name="org.ofono.CallVolume">
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <method name="SetProperty">
@@ -179,6 +190,7 @@
     </interface>
     <interface name="org.ofono.MessageManager">
         <method name="GetProperties">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="properties" type="a{sv}" direction="out" />
         </method>
         <method name="SetProperty">
@@ -191,6 +203,7 @@
             <arg name="path" type="o" direction="out" />
         </method>
         <method name="GetMessages">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QList<QPair<QDBusObjectPath,QList<QVariantMap> > >"/>
             <arg name="messages" type="a(oa{sv})" direction="out" />
         </method>
         <signal name="PropertyChanged">
@@ -198,14 +211,17 @@
             <arg name="value" type="v" />
         </signal>
         <signal name="IncomingMessage">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="message" type="s" />
             <arg name="info" type="a{sv}" />
         </signal>
         <signal name="ImmediateMessage">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="message" type="s" />
             <arg name="info" type="a{sv}" />
         </signal>
         <signal name="MessageAdded">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVariantMap"/>
             <arg name="path" type="o" />
             <arg name="properties" type="a{sv}" />
         </signal>

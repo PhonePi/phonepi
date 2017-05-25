@@ -1,7 +1,3 @@
-//
-// Created by arseny on 15.05.17.
-//
-
 #ifndef DAEMON_HANDLER_H
 #define DAEMON_HANDLER_H
 
