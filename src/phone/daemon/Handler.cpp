@@ -13,8 +13,8 @@
 #include <QtCore/QVariant>
 #include "Handler.h"
 #include "Struct.h"
-#include "OfonoVoiceCallManagerAdaptor.h"
-#include "VoiceCallManager.h"
+#include "AdaptorVoiceCallManager.h"
+#include "ProxyVoiceCallManager.h"
 
 Handler::Handler(QObject *parent): QObject(parent){}
 
@@ -24,8 +24,19 @@ void Handler::setUpHandler(QDBusConnection bus, QString current_modem){
     if(!bus.isConnected())
         exit(1);
 
-    VoiceCallManagerAdaptor *voiceCall = new VoiceCallManagerAdaptor(this);
-    auto reply = QDBusConnection::sessionBus().registerObject("/handler", this);
+    //voiceCall->blockSignals(false);
+    //voiceCall->GetCalls();
+
+    QDBusInterface dbus_iface("org.ofono", "/sim900_0", "org.ofono.VoiceCallManager", bus);
+    QDBusMessage calls = dbus_iface.call("GetCalls");
+
+    if(QDBusMessage::ErrorMessage == calls.type()){
+        writeLog(calls.errorMessage().toLatin1(), ERROR);
+        exit(1);
+     }
+
+    new VoiceCallManagerAdaptor(this);
+    auto reply = QDBusConnection::sessionBus().registerObject("/CallHandler", this);
     if(reply)
         writeLog("Handler | Succesfully register!", INFO);
     else{
@@ -33,8 +44,6 @@ void Handler::setUpHandler(QDBusConnection bus, QString current_modem){
         exit(1);
     }
 
-    voiceCall->blockSignals(false);
-    voiceCall->GetCalls();
     org::ofono::VoiceCallManager *iface;
     iface = new org::ofono::VoiceCallManager(QString(), current_modem, QDBusConnection::sessionBus(), this);
     connect(iface, SIGNAL(CallAdded(QDBusObjectPath&, QVariantMap& )), this, SLOT(callAdded(QDBusObjectPath,QVariantMap)));

@@ -1,18 +1,17 @@
-QT += core dbus 
-QT -= gui
+QT += core dbus
 CONFIG += c++11 qtquickcompiler warn_off
 
-HEADERS += Handler.h Struct.h \
-        OfonoModem.h OfonoVoiceCallManagerAdaptor.h \
-		VoiceCallManager.h \
+HEADERS += Handler.h \
+        Struct.h \
+        OfonoModem.h \
+        AdaptorVoiceCallManager.h \
+        ProxyVoiceCallManager.h \
 
 SOURCES += main.cpp \
     Handler.cpp \
     OfonoModem.cpp \
-    OfonoVoiceCallManagerAdaptor.cpp \
-	VoiceCallManager.cpp \
-
-
+    AdaptorVoiceCallManager.cpp \
+    ProxyVoiceCallManager.cpp \
 
 target.path = $$[QT_INSTALL_EXAMPLES]
 sources.files = $$SOURCES $$HEADERS calls_daemon.pro
