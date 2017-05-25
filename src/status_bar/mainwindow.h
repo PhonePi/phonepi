@@ -10,12 +10,14 @@
 #include <QObject>
 
 class MainWindow : public QQmlApplicationEngine{
-Q_OBJECT
-
+	Q_OBJECT
 public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
-	Q_INVOKABLE QString execCom();
+	Q_INVOKABLE void getTime ();
+	Q_INVOKABLE void getBatteryState();
 
+private:
+	QList<QObject*> objectList;
 };
 #endif // MAINWINDOW_H
