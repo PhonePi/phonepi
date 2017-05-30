@@ -11,11 +11,7 @@ Window{
 	minimumWidth: 480
 	maximumWidth: 480
 	title: "Calling"
-	visible: true
-		
-	function getNumber(){
-		call_number.text +=  window.getNumber()
-	}
+    visible: true
 
 	Rectangle{
 		id: call_info

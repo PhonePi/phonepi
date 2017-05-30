@@ -101,10 +101,6 @@ Window{
 			}
 		}
 
-		function dial(object){
-			window.DialNumber(object.text);
-		}
-
 		Image {
 			id: buttonDial
 			width: 70
@@ -125,6 +121,10 @@ Window{
 				}
 			}
 		
+		}
+
+		function dial(object){
+            window.dialNumber(object.text);
 		}
 
 	}
