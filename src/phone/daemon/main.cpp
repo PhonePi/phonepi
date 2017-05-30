@@ -1,19 +1,20 @@
-#include <iostream>
 #include <fstream>
 #include <QString>
 #include <QtDBus>
+#include <glib.h>
+#include <dbus/dbus.h>
+#include <dbus/dbus-glib-lowlevel.h>
 #include "Struct.h"
-#include "Handler.h"
-#include "OfonoModem.h"
-#include "NetworkRegistration.h"
 
 #define INFO 0
 #define ERROR -1
 
 bool isAnswerValid(QDBusMessage);
-int callsMonitor(QDBusConnection, QString);
+int callsMonitor();
 QVariant isModemEnabled = "false";
 void writeLog(const char*, int);
+int setupHandler();
+DBusHandlerResult call_added_callback(DBusConnection*, DBusMessage*, void *);
 
 int main() {
 
@@ -51,7 +52,6 @@ int main() {
                 writeLog("Modem powered: " + isModemEnabled.toString().toLatin1(), INFO);
             }
 
-
     if(selected_modem.isNull() || selected_modem.isEmpty()) {
         writeLog("No modem was selected", ERROR);
         exit(1);
@@ -61,22 +61,23 @@ int main() {
     writeLog("Selected modem: " + selected_modem.toLatin1(), INFO);
 
     if(isModemEnabled == "false") {
-        OrgOfonoModemInterface ofono("org.ofono", selected_modem, bus);
-        auto reply = ofono.SetProperty("Powered", QDBusVariant(true));
+        QDBusInterface modem_iface("org.ofono", "/", "org.ofono.Modem", bus);
+        QList<QVariant> argumentList;
+        auto reply = modem_iface.call(QString("SetProperty"), QVariant::fromValue(QString("Powered")), QVariant::fromValue(QDBusVariant(true)));
 
-        reply.waitForFinished();
-
-        if(reply.isError()){
-            writeLog(reply.error().name().toLatin1(), ERROR);
+        if(!isAnswerValid(reply)){
+            writeLog(reply.errorMessage().toLatin1(), ERROR);
             exit(1);
         }
-        if(reply.isValid()) {
-            writeLog("Modem succesffuly enabled", INFO);
-        }
+        writeLog("Modem succesffuly enabled", INFO);
+
     }
 
-    OrgOfonoNetworkRegistrationInterface network("org.ofono", selected_modem, bus);
-    auto reply = network.GetOperators().argumentAt(0).value<QDBusArgument>();
+    QDBusInterface network_iface("org.ofono", selected_modem, "org.ofono.NetworkRegistration", bus);
+    QList<QVariant> argumentList;
+    QDBusPendingReply<> operators= network_iface
+            .asyncCallWithArgumentList(QStringLiteral("GetOperators"), argumentList);
+    auto reply = operators.argumentAt(0).value<QDBusArgument>();
     answers = getStructAnswer(reply);
     QString networkOperator;
     for(Answer_struct answer : answers)
@@ -104,7 +105,7 @@ int main() {
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
 
-        return callsMonitor(bus, selected_modem);
+        return callsMonitor();
 
     } else
         return 0;
@@ -118,9 +119,53 @@ bool isAnswerValid(QDBusMessage msg) {
     return true;
 }
 
-int callsMonitor(QDBusConnection bus, QString current_modem){
-    Handler handler;
-    handler.setUpHandler(bus, current_modem);
-
+int callsMonitor() {
+    QDBusInterface calls_inface("org.ofono", "/", "org.ofono.Manager", QDBusConnection::systemBus());
+    QDBusMessage modem = calls_inface.call("GetCalls");
+    setupHandler();
     writeLog("Daemon ends", ERROR);
+}
+
+DBusHandlerResult call_added_callback(DBusConnection *con, DBusMessage *msg, void *user_data){
+    if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallAdded"))
+        writeLog("CallAdded callback", INFO);
+
+    if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved"))
+        writeLog("CallRemoved callback", INFO);
+
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
+int setupHandler() {
+    writeLog("Handler settings", INFO);
+    GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+    DBusError error;
+    writeLog("DBusError error", INFO);
+    dbus_error_init(&error);
+    DBusConnection *conn = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
+
+    if(dbus_error_is_set(&error)){
+        writeLog(strcat("Cannot get System BUS connection: ", error.message), ERROR);
+        dbus_error_free(&error);
+        return EXIT_FAILURE;
+    }
+    writeLog("Succesfull System BUS connection", INFO);
+    dbus_connection_setup_with_g_main(conn, NULL);
+
+    char *rule = "type='signal', interface='org.ofono.VoiceCallManager'";
+    dbus_bus_add_match(conn, rule, &error);
+
+    if(dbus_error_is_set(&error)){
+        writeLog(strcat("Cannot add D-BUS match rule, cause: ", error.message), ERROR);
+        dbus_error_free(&error);
+        return EXIT_FAILURE;
+    }
+
+    Answer_struct callAddedStruct;
+    writeLog("Listenning to D-BUS signals using a connection filter", INFO);
+    dbus_connection_add_filter(conn, call_added_callback, &callAddedStruct, NULL);
+
+    g_main_loop_run(loop);
+
+    return EXIT_SUCCESS;
 }
