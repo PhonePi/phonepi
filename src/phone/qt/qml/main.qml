@@ -8,9 +8,9 @@ Window{
 	height: Screen.height
 	maximumHeight: Screen.height
 	minimumHeight: Screen.height
-	width:  Screen.width
-	minimumWidth: Screen.width
-	maximumWidth: Screen.width
+    width:  480
+    minimumWidth: 480
+    maximumWidth: 480
 	title: "Phone"
 	visible: true
 
@@ -116,16 +116,13 @@ Window{
 
 			MouseArea{
 				anchors.fill: parent
-				onClicked: {
-					dial(phoneNumber)
-				}
+				onClicked:dial(phoneNumber)
 			}
-		
 		}
 
+
+	}
 		function dial(object){
             window.dialNumber(object.text);
 		}
-
-	}
 }

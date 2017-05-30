@@ -7,9 +7,9 @@ Window{
 	height: Screen.height
 	maximumHeight: Screen.height
 	minimumHeight: Screen.height
-	width: 480 
-	minimumWidth: 480
-	maximumWidth: 480
+    width: 480
+    minimumWidth: 480
+    maximumWidth: 480
 	title: "Calling"
     visible: true
 
@@ -22,13 +22,24 @@ Window{
 			top: parent.top
 		}
 		height: Screen.height / 2
-		width: 480
+        width: Screen.width
 
-		Text {
-			id: call_number
-			objectName: "call_number"
-			color: "#fbf1c7"
-			text: ""
-		}
+        Text {
+            id: call_number
+            objectName: "call_number"
+            color: "#fbf1c7"
+            anchors{
+                top: parent.top
+                left: parent.left
+
+                topMargin: parent.height / 3
+                leftMargin: 20
+            }
+            renderType: Text.NativeRendering
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.family: "SF"
+            font.pointSize: 30
+        }
 	}
 }

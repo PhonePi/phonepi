@@ -20,14 +20,12 @@ public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
     void GetModem();
-    void EnableModem();
-    void AnswerValidation(QDBusMessage msg);
+    void isAnswerValid(QDBusMessage msg);
     Q_INVOKABLE void dialNumber(QString number);
 
 private:
     QDBusConnection bus = QDBusConnection::systemBus();
     QString selected_modem;
-    QVariant isModemEnabled = "false";
 	QString dialedNumber;
 };
 #endif // MAINWINDOW_H
