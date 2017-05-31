@@ -36,7 +36,7 @@ Window{
 		height: parent.height
 		anchors{
 			bottom: parent.bottom
-			BottomMargin: 10
+			bottomMargin: 10
 			horizontalCenter: parent.horizontalCenter
 		}
 
