@@ -1,0 +1,6 @@
+# Object files
+*.o
+# Qt stuff
+moc_*
+qrc_*
+Makefile
