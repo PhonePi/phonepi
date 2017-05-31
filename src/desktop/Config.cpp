@@ -5,15 +5,27 @@
 #include <dirent.h>
 #include <iostream>
 #include <QDir>
+#include <pwd.h>
+#include <unistd.h>
 
 #include "Config.h"
+
+std::string get_fullpath(const std::string path) {
+    if (path[0] == '~') {
+        struct passwd *pw = getpwuid(getuid());
+        std::string fullpath = std::string(pw->pw_dir);
+        fullpath += std::string(path.begin() + 1, path.end());
+        return fullpath;
+    }
+    return path;
+}
 
 inline bool ends_with(std::string const & value, std::string const & ending) {
     if (ending.size() > value.size()) return false;
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-Config::Config(const std::string conffile): conf_(conffile) {}
+Config::Config(const std::string conffile): conf_(get_fullpath(conffile)) {}
 
 std::string Config::getBackgroung() {
     return conf_.Get("desktop", "background", "");
@@ -21,7 +33,7 @@ std::string Config::getBackgroung() {
 
 std::vector<Applicaton> Config::getApplications() {
     std::vector<Applicaton> apps;
-    auto desktopEntryDir = conf_.Get("apps", "entry-dir", "");
+    auto desktopEntryDir = get_fullpath(conf_.Get("apps", "entry-dir", ""));
     if (desktopEntryDir.empty()) return apps;
 
     DIR *dir;
@@ -44,8 +56,8 @@ std::vector<Applicaton> Config::getApplications() {
             Applicaton app;
             app.icon = entryconf.Get("Desktop Entry", "Icon", "");
             app.name = entryconf.Get("Desktop Entry", "Name", "");
-            app.path = entryconf.Get("Desktop Entry", "Path", "");
-            app.executable = entryconf.Get("Desktop Entry", "Exec", "");
+            app.path = get_fullpath(entryconf.Get("Desktop Entry", "Path", ""));
+            app.executable = get_fullpath(entryconf.Get("Desktop Entry", "Exec", ""));
             if (not (app.executable.empty() || app.name.empty() || app.icon.empty()))
                 apps.push_back(app);
         }
@@ -73,3 +85,5 @@ int Config::getFontSize() {
 std::string Config::getFontColor() {
     return conf_.Get("desktop", "fontcolor", "White");
 }
+
+const std::string Config::DEFAULT_CONFIG = "~/.config/desktop";

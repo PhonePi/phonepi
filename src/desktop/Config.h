@@ -20,10 +20,10 @@ class Config {
 
 public:
 
-    const std::string DEFAULT_CONFIG = "~/.config/desktop";
+    static const std::string DEFAULT_CONFIG;
 
-    Config() : Config(DEFAULT_CONFIG) {}
     Config(const std::string conffile);
+    Config() : Config(DEFAULT_CONFIG) {}
 
     int getIconsize();
     int getFontSize();
