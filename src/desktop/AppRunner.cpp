@@ -32,7 +32,6 @@ int makeargs(const char *args, int *argc, char ***aa) {
 
 
 void AppRunner::execute() {
-    printf("executing %s\n", app_.executable.c_str());
     pid_t pid = fork();
     if (pid == 0) {
         if (not app_.path.empty()) chdir(app_.path.c_str());

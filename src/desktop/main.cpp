@@ -11,8 +11,7 @@
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    Config config("/home/kivi/workspace/Phone/src/desktop/config.ini");
-
+    Config config;
 
     // creating widget
     QWidget widget;
