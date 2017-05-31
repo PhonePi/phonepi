@@ -32,9 +32,11 @@ int main(int argc, char** argv) {
 
     QSpinBox *brightnessSpinBox = new QSpinBox;
     brightnessSpinBox->setReadOnly(true);
+    brightnessSpinBox->setValue(100);
 
     QSlider* brightnessSlider = new QSlider(Qt::Horizontal, 0);
     brightnessSlider->setRange(0, 100);
+    brightnessSlider->setValue(100);
     QObject::connect(brightnessSlider, &QSlider::valueChanged, brightnessSpinBox, &QSpinBox::setValue);
     QObject::connect(brightnessSlider, &QSlider::valueChanged, readBrightness);
 
