@@ -66,8 +66,4 @@ void setBrightness(char val) {
     if (write(fd, buf, 2) != 2) {
         fprintf(stderr,"write error\n");
     }
-
-    if (read(fd,buf,1) != 1) {
-        fprintf(stderr,"read error\n");
-    }
 }
