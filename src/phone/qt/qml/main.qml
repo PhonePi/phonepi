@@ -14,6 +14,26 @@ Window{
 	title: "Phone"
 	visible: true
 
+
+
+	Image {
+		id: buttonBack
+		width: 170
+		height: 70
+		source: "qrc:///pics/back.png"
+
+   	    anchors{
+			top: parent.top
+			left: parent.left
+			leftMargin: 10
+		}
+
+		MouseArea{
+			anchors.fill: parent
+			onClicked:Qt.quit()
+		}
+	}
+
 	Image {
 		id: buttonDelete
 		width: 70
@@ -44,7 +64,7 @@ Window{
 			leftMargin: 10
 			right: buttonDelete.left
 			rightMargin: 10
-			top: parent.top
+			top: buttonBack.bottom
 			topMargin: 20
 		}
 	}
@@ -122,7 +142,8 @@ Window{
 
 
 	}
-		function dial(object){
-            window.dialNumber(object.text);
-		}
+
+	function dial(object){
+        window.dialNumber(object.text);
+	}
 }
