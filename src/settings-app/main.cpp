@@ -6,6 +6,7 @@
 #include <QtWidgets/QSpinBox>
 
 #include <iostream>
+#include <QtWidgets/QPushButton>
 
 #include "brightness.h"
 
@@ -42,8 +43,28 @@ int main(int argc, char** argv) {
     brightnessLayout->addWidget(brightnessSpinBox);
     brightnessWidget->setLayout(brightnessLayout);
 
+    layout->addWidget(brightnessWidget, 0, Qt::AlignTop | Qt::AlignVCenter | Qt::AlignBaseline);
 
-    layout->addWidget(brightnessWidget, 0 , Qt::AlignTop | Qt::AlignVCenter | Qt::AlignBaseline);
+
+    // back button
+    QWidget* controlWidget = new QWidget;
+    controlWidget->setWindowTitle("controls");
+    QHBoxLayout *controlLayout = new QHBoxLayout();
+
+    QPushButton *backButton = new QPushButton;
+    backButton->setText("back");
+    backButton->setStyleSheet(QString(fontcolor.c_str()));
+    font = backButton->font();
+    font.setPointSize(16);
+    font.setBold(true);
+    backButton->setFont(font);
+    QObject::connect(backButton, &QPushButton::clicked, &a, &QApplication::quit);
+    controlLayout->addWidget(backButton);
+
+
+    controlWidget->setLayout(controlLayout);
+    layout->addWidget(controlWidget, 0, Qt::AlignVertical_Mask);
+
 
     // start application
     widget.setLayout(layout);
