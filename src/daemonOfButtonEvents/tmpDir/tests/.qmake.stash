@@ -1,0 +1,12 @@
+QMAKE_DEFAULT_INCDIRS = \
+    /usr/include/c++/6.3.1 \
+    /usr/include/c++/6.3.1/armv6l-unknown-linux-gnueabihf \
+    /usr/include/c++/6.3.1/backward \
+    /usr/lib/gcc/armv6l-unknown-linux-gnueabihf/6.3.1/include \
+    /usr/local/include \
+    /usr/lib/gcc/armv6l-unknown-linux-gnueabihf/6.3.1/include-fixed \
+    /usr/include
+QMAKE_DEFAULT_LIBDIRS = \
+    /usr/lib/gcc/armv6l-unknown-linux-gnueabihf/6.3.1 \
+    /usr/lib \
+    /lib
