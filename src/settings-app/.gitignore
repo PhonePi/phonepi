@@ -1,0 +1,13 @@
+.idea/
+.qmake.stash
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake-build-debug/
+cmake_install.cmake
+settings_app
+settings_app_autogen/
+settings_app.cbp
+settings_app_automoc.cpp
+settings_app_automoc.dir/
+

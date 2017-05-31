@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Settings
+Comment=Very setting, mush wow
+Path=/home/kivi/workspace/Phone/src/settings-app/
+Exec=settings_app
+Icon=/home/kivi/workspace/Phone/src/settings-app/entry/settings-icon.png
