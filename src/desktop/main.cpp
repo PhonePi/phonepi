@@ -86,8 +86,9 @@ int main(int argc, char *argv[]) {
     }
     // set layout
     widget.setLayout(layout);
-    // run in fullscreen
-    widget.showFullScreen();
+    // run
+    widget.showMaximized();
+    widget.activateWindow();
 
     return a.exec();
 }
