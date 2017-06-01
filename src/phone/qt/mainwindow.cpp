@@ -1,12 +1,3 @@
-/*
-    КОСТЫЛИ. КОСТЫЛИ ВЕЗДЕ
-
-    Реализованы следующие методы:
-    Получение модема (Костыли. Нужна правильная обработка ответа)
-    Подключение модема (дождаться ответа. Не открывать GUI без ответа)
-    Звонок (После нажатия на кнопку перерисовать на совершение звонка. Дождаться ответа. После ответа добавление таймера вызова)
-*/
-
 #include "mainwindow.h"
 #include <QQmlComponent>
 #include <QQuickItem>
@@ -18,9 +9,8 @@ MainWindow::MainWindow(QObject *parent)
 	rootContext()->setContextProperty("window", this);
 	if(!bus.isConnected())
 		exit(1);
-	
-//    GetModem();
-//    EnableModem();
+
+    GetModem();
 }
 
 MainWindow::~MainWindow()
@@ -47,7 +37,7 @@ std::vector<Answer_struct> getStructAnswer(const QDBusArgument &dbusArgs) {
     return answers;
 }
 
-void MainWindow::AnswerValidation(QDBusMessage msg)
+void MainWindow::isAnswerValid(QDBusMessage msg)
 {
     if(QDBusMessage::ErrorMessage == msg.type()){
         qDebug() << msg.errorMessage();
@@ -55,109 +45,48 @@ void MainWindow::AnswerValidation(QDBusMessage msg)
     }
 }
 
-void MainWindow::GetModem()
-{
-    QDBusInterface dbus_iface("org.ofono", "/", "org.ofono.Manager", bus);
+void MainWindow::GetModem(){
+    QDBusConnection bus = QDBusConnection::systemBus();
 
+    if(!bus.isConnected())
+        exit(1);
+
+    QDBusInterface dbus_iface("org.ofono", "/", "org.ofono.Manager", bus);
     QDBusMessage modem = dbus_iface.call("GetModems");
 
-    AnswerValidation(modem);
-
-    //qDebug() << modem;
+    isAnswerValid(modem);
 
     const QDBusArgument &dbusArgs = modem.arguments().first().value<QDBusArgument>();
+    std::vector<Answer_struct> answers = getStructAnswer(dbusArgs);
 
-    if (dbusArgs.currentType() != QDBusArgument::ArrayType)
-    {
-        qDebug() << "Not array";
+    if(answers.size() == 0)
         exit(1);
-    }
 
-    auto answer = getStructAnswer(dbusArgs);
-
-    if(answer.size() == 0){
-        qDebug() << "Answer is NULL";
-        exit(1);
-    }
-
-
-    if(answer.size() == 1) {
-        selected_modem = answer[0].name;
-        isModemEnabled = answer[0].porp_map["Powered"];
-        qDebug() << "Modem powered: " + isModemEnabled.toString().toLatin1();
-    }else
-        for(Answer_struct modem : answer)
-            if(modem.name.contains("sim900")){
+    if(answers.size() == 1)
+        selected_modem = answers[0].name;
+    else
+        for(Answer_struct modem : answers)
+            if(modem.name.contains("sim900"))
                 selected_modem = modem.name;
-                isModemEnabled = modem.porp_map["Powered"].toBool();
-                qDebug() << "Modem powered: " + isModemEnabled.toString().toLatin1();
-            }
 
-
-    if(selected_modem.isNull() || selected_modem.isEmpty()) {
-        qDebug() << "No modem was selected";
-        exit(1);
-    }else
-        qDebug() << "Selected modem: " << selected_modem;
-}
-
-
-void MainWindow::EnableModem()
-{
     if(selected_modem.isNull() || selected_modem.isEmpty())
-    {
-        qDebug() << "No modem to enable";
         exit(1);
-    }
-
-    QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.Modem", bus);
-
-    QDBusMessage modem_status = dbus_iface.call("SetProperty",
-                                                QString("Powered"), QVariant::fromValue(QDBusVariant(true)));
-
-    AnswerValidation(modem_status);
-
-    qDebug() << modem_status;
-
 }
 
-void MainWindow::DialNumber(QString call_number)
+void MainWindow::dialNumber(QString call_number)
 {
 	if(call_number.isEmpty() || call_number.isNull())
 		return;
 
-	dialedNumber = call_number;
-	QQmlEngine engine;
-	engine.rootContext()->setContextProperty("window", this);
-	QQmlComponent component(&engine);
-	component.loadUrl(QUrl("qrc:///qml/dialing.qml"));
-//	component.setProperty("call_numberText", call_number);
-	QObject *text = component.findChild<QObject*>("call_number");
-	if(text) {
-		qDebug() << "Setting prop"; 
-		text -> setProperty("text", call_number);
-	}
+    load(QUrl("qrc:///qml/dialing.qml"));
 
-	if ( component.isReady() ){
-	    component.create();
-	}
-	else
-	    qWarning() << component.errorString();
+    QList<QObject*> objectList = this->rootObjects();
+    QObject* object =  objectList[1]->findChild<QObject*>("call_number");
+    if(object)
+        object->setProperty("text", call_number);
 
-
-    QVariant number(QVariant::String);
-	number = call_number;
-    QList<QVariant>args;
+    qDebug() << call_number;
     QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
-    args.append(number);
-    args.append("");
-    QDBusMessage call_status = dbus_iface.callWithArgumentList(QDBus::BlockWithGui,
-"Dial", args);    
-	AnswerValidation(call_status);
+    dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(call_number)), QVariant::fromValue(QString("")));
 
-    qDebug() << call_status;
-}
-
-QString MainWindow::GetNumber(){
-	return dialedNumber;
 }
