@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Status bar
+Comment=Very status, much bar Wow!
+Path=~/Phone/src/status_bar/
+Exec=status
+Icon=~/Phone/src/desktop/entries/statusicon.png
