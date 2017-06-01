@@ -8,8 +8,8 @@ Rectangle {
 	property int spacing
 
 	id: button1
-	width: 40
-	height: 20
+	width: 55
+	height: 30
 			
 	Text {
 		renderType: Text.NativeRendering
