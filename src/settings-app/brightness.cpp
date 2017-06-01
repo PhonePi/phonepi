@@ -40,7 +40,6 @@ void* brightnessThread(void*) {
                 setBrightness(brightnessValue);
             }
         }
-        usleep(250000);
     }
 }
 
