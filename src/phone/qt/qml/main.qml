@@ -5,12 +5,12 @@ import "core"
 
 Window{
 	id: phone
-	height: Screen.height
-	maximumHeight: Screen.height
-	minimumHeight: Screen.height
-    width:  480
-    minimumWidth: 480
-    maximumWidth: 480
+	height: Screen.width
+	maximumHeight:Screen.width 
+	minimumHeight: Screen.width
+    width:  Screen.height
+    minimumWidth: Screen.height
+    maximumWidth: Screen.height
 	title: "Phone"
 	visible: true
 
