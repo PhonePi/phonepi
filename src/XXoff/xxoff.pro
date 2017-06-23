@@ -12,4 +12,4 @@ RESOURCES += res.qrc
 target.path = /usr/bin/
 sources.files = $$SOURCES $$HEADERS $$RESOURCES xxoff.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]
-INSTALLS += target sources
+INSTALLS += target
