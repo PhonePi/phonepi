@@ -5,9 +5,9 @@ CMakeFiles/
 Makefile
 cmake-build-debug/
 cmake_install.cmake
-settings_app
-settings_app_autogen/
-settings_app.cbp
-settings_app_automoc.cpp
-settings_app_automoc.dir/
+settings-pi
+settings-pi_autogen/
+settings-pi.cbp
+settings-pi_automoc.cpp
+settings-pi_automoc.dir/
 
