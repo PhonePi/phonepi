@@ -54,7 +54,7 @@ std::vector<Applicaton> Config::getApplications() {
             if (type != "Application") continue;
 
             Applicaton app;
-            app.icon = entryconf.Get("Desktop Entry", "Icon", "");
+            app.icon = get_fullpath(entryconf.Get("Desktop Entry", "Icon", ""));
             app.name = entryconf.Get("Desktop Entry", "Name", "");
             app.path = get_fullpath(entryconf.Get("Desktop Entry", "Path", ""));
             app.executable = get_fullpath(entryconf.Get("Desktop Entry", "Exec", ""));
