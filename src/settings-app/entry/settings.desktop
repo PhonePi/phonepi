@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Settings
-Comment=Very setting, mush wow
-Path=~/Phone/src/settings-app/
-Exec=settings_app
-Icon=~/Phone/src/settings-app/entry/settings-icon.png

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Settings
+Comment=Very settings, mush wow
+Exec=/usr/local/bin/settings-pi
+Icon=~/.local/share/icons/settings-pi.png
