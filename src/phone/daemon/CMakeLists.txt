@@ -11,7 +11,7 @@ pkg_check_modules(GLIB REQUIRED glib-2.0)
 
 include_directories(${GLIB_INCLUDE_DIRS})
 include_directories(/usr/include/dbus-1.0/)
-include_directories(/usr/lib/x86_64-linux-gnu/dbus-1.0/include)
+include_directories(/usr/lib/dbus-1.0/include)
 
 set (LIBS dbus-1 dbus-glib-1)
 set(SOURCE_FILES main.cpp Struct.h)
