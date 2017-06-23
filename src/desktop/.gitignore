@@ -5,9 +5,9 @@ CMakeFiles/
 Makefile
 cmake-build-debug/
 cmake_install.cmake
-desktop
-desktop_autogen/
-desktop.cbp
-desktop_automoc.cpp
-desktop_automoc.dir/
+desktop-pi
+desktop-pi_autogen/
+desktop-pi.cbp
+desktop-pi_automoc.cpp
+desktop-pi_automoc.dir/
 

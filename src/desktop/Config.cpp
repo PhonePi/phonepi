@@ -28,7 +28,7 @@ inline bool ends_with(std::string const & value, std::string const & ending) {
 Config::Config(const std::string conffile): conf_(get_fullpath(conffile)) {}
 
 std::string Config::getBackgroung() {
-    return conf_.Get("desktop", "background", "");
+    return get_fullpath(conf_.Get("desktop", "background", ""));
 }
 
 std::vector<Applicaton> Config::getApplications() {
@@ -86,4 +86,4 @@ std::string Config::getFontColor() {
     return conf_.Get("desktop", "fontcolor", "White");
 }
 
-const std::string Config::DEFAULT_CONFIG = "~/.config/desktop";
+const std::string Config::DEFAULT_CONFIG = "~/.config/desktop-pi";
