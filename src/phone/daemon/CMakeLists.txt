@@ -19,3 +19,5 @@ set(SOURCE_FILES main.cpp Struct.h)
 add_executable(calls_daemon ${SOURCE_FILES})
 
 target_link_libraries(calls_daemon Qt5::DBus ${DBUS_LIBRARIES} ${GLIB_LIBRARIES} ${LIBS})
+
+install(TARGETS calls_daemon EXPORT calls_daemon DESTINATION bin)
