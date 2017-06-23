@@ -12,7 +12,7 @@ SOURCES += btn_sound.cpp \
 
 
 
-target.path = $$[QT_INSTALL_EXAMPLES]
+target.path = /usr/bin/
 sources.files = $$SOURCES $$HEADERS btn_sound.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]
 INSTALLS += target sources
