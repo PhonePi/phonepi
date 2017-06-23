@@ -5,5 +5,5 @@ clean:
 	rm cerebro
 
 install:
-	install -Dm755 "./cerebro" "/usr/sbin/cerebro"
-	install -Dm755 "./cerebro.service" "/usr/lib/systemd/system/cerebro.service"
+	install -Dm755 "./cerebro" "$(DESTDIR)/sbin/cerebro"
+	install -Dm755 "./cerebro.service" "$(DESTDIR)/lib/systemd/system/cerebro.service"
