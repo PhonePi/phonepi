@@ -9,7 +9,7 @@ OTHER_FILES = main.qml button.qml
 
 RESOURCES += res.qrc
 
-target.path = $$[QT_INSTALL_EXAMPLES]
+target.path = /usr/bin/
 sources.files = $$SOURCES $$HEADERS $$RESOURCES xxoff.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]
 INSTALLS += target sources
