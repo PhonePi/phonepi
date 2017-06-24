@@ -10,6 +10,7 @@ OTHER_FILES = main.qml dialing.qml button.qml
 RESOURCES += res.qrc
 
 target.path = /usr/bin/
+target.files = phone
 sources.files = $$SOURCES $$HEADERS $$RESOURCES phone.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]
 INSTALLS += target 
