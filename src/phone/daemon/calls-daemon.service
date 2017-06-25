@@ -1,0 +1,9 @@
+[Unit]
+Description=PhonePi daemon for calls handling
+After=ofono.service
+
+[Service]
+ExecStart=/bin/calls_daemon
+
+[Install]
+Alias=calls-daemon.service
