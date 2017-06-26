@@ -3,7 +3,7 @@
 
 Modem::Modem(DBusConnection *connection, std::string preferedModem) {
     this->connection = connection;
-    this->preferedModem = preferedModem.c_str();
+    this->preferedModem = preferedModem;
 
     getModem();
 }
@@ -53,36 +53,44 @@ void Modem::getModem() {
         }
     } else {
         for (g_answer modem : modems) {
-            if ((*g_string_new(preferedModem)).str == modem.name.str) {
+            if(preferedModem == std::string(modem.name.str)){
                 name = modem.name;
                 this->props = modem.props;
                 for (g_prop props : this->props) {
-                    if ((*g_string_new("Powered")).str == props.prop_name.str) {
+                    if ("Powered" == std::string(props.prop_name.str)){
                         enabled = props.prop_val.str == "True";
                         break;
                     }
                 }
+                break;
             }
         }
     }
-    writeLog(strcat(strcat("Modem ", name.str), " powered: ") + enabled, INFO);
+
+    std::string msg = std::string("Modem ") + name.str + " powered state: " +
+            (enabled ? "True" : "False");
+    writeLog(msg.c_str(), INFO);
 }
 
-bool Modem::enableModem() {
+void Modem::enableModem() {
     if(enabled)
-        return true;
+        return;
 
-    DBusMessageIter args;
+    DBusMessageIter args, subIter;
     DBusPendingCall* pending;
     DBusMessage *msg = dbus_message_new_method_call("org.ofono", name.str, "org.ofono.Modem", "SetProperty");
     isMsgValid(msg);
 
+    dbus_bool_t bolVal = TRUE;
+    std::string prop = "Powered";
     dbus_message_iter_init_append(msg, &args);
-    if (!dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, "Powered") &&
-            !dbus_message_iter_append_basic(&args, DBUS_TYPE_BOOLEAN, "True")) {
-        writeLog("Out Of Memory!\n", ERROR);
-        exit(1);
-    }
+    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &prop);
+
+    dbus_message_iter_open_container(&args, DBUS_TYPE_VARIANT, DBUS_TYPE_BOOLEAN_AS_STRING, &subIter);
+    dbus_message_iter_append_basic(&subIter, DBUS_TYPE_BOOLEAN, &bolVal);
+
+    dbus_message_iter_close_container(&args, &subIter);
+
     if (!dbus_connection_send_with_reply (connection, msg, &pending, -1)) { // -1 is default timeout
         writeLog("Out Of Memory!\n", ERROR);
         exit(1);
@@ -92,5 +100,7 @@ bool Modem::enableModem() {
         exit(1);
     }
     dbus_message_unref(msg);
+    enabled = true;
+    writeLog("Modem was successfully enabled", INFO);
 }
 

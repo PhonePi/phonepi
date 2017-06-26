@@ -18,14 +18,15 @@ private:
     std::vector<g_prop> props;
     bool enabled = false;
     DBusConnection *connection;
-    const gchar *preferedModem;
+    std::string preferedModem;
     std::vector<g_answer> allModems();
     void getModem();
 
 
 public:
     Modem(DBusConnection*, std::string);
-    bool enableModem();
+    void enableModem();
+    void getOperator();
 };
 
 

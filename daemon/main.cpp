@@ -1,113 +1,29 @@
 #include <fstream>
-#include <QString>
-#include <QtDBus>
 #include <glib.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
 #include "Struct.h"
+#include "Modem.h"
 
 #define INFO 0
 #define ERROR -1
 
-bool isAnswerValid(QDBusMessage);
 int callsMonitor();
-QVariant isModemEnabled = "false";
 void writeLog(const char*, int);
 int setupHandler();
 DBusHandlerResult call_added_callback(DBusConnection*, DBusMessage*, void *);
 DBusConnection *connection;
 DBusError error;
-DBusPendingCall *pending;
-DBusMessageIter args;
 
 int main() {
 
     writeLog("Start calls daemon", INFO);
     connection = connectToBus(error);
-/*    QDBusConnection bus = QDBusConnection::systemBus();
 
-    if(!bus.isConnected())
-        exit(1);
-*/
-    DBusMessage *msg = dbus_message_new_method_call("org.ofono", "/", "org.ofono.Manager", "GetModems");
-    isMsgValid(msg);
-    // send message and get a handle for a reply
-    if (!dbus_connection_send_with_reply(connection, msg, &pending, 1500)) {
-        writeLog("Out Of Memory!\n", ERROR);
-        exit(1);
-    }
-    if (NULL == pending) {
-        writeLog("Pending Call Null\n", ERROR);
-        exit(1);
-    }
-    //dbus_connection_flush(connection);
-    // free message
-    dbus_message_unref(msg);
-    dbus_uint32_t level;
-    // block until we receive a reply
-    dbus_pending_call_block(pending);
-    // get the reply message
-    msg = dbus_pending_call_steal_reply(pending);
-    isMsgValid(msg);
-    // free the pending message handle
-    dbus_pending_call_unref(pending);
-    // read the parameters
-    if (!dbus_message_iter_init(msg, &args))
-        writeLog("Message has no arguments!\n", INFO);
-    getAnswer(msg, args);
+    Modem current_modem(connection, "/sim900_0");
+    current_modem.enableModem();
 
-    // free reply and close connection
-    dbus_message_unref(msg);
-
-/*    QDBusInterface dbus_iface("org.ofono", "/", "org.ofono.Manager", bus);
-    QDBusMessage modem = dbus_iface.call("GetModems");
-
-    if(!isAnswerValid(modem))
-        exit(1);
-
-    const QDBusArgument &dbusArgs = modem.arguments().first().value<QDBusArgument>();
-    std::vector<Answer_struct> answers = getStructAnswer(dbusArgs);
-    QString selected_modem;
-
-    if(answers.size() == 0){
-        writeLog("Answer is NULL", ERROR);
-        exit(1);
-    }
-
-
-    if(answers.size() == 1) {
-        selected_modem = answers[0].name;
-        isModemEnabled = answers[0].porp_map["Powered"];
-        writeLog("Modem powered: " + isModemEnabled.toString().toLatin1(), INFO);
-    }else
-        for(Answer_struct modem : answers)
-            if(modem.name.contains("sim900")){
-                selected_modem = modem.name;
-                isModemEnabled = modem.porp_map["Powered"].toBool();
-                writeLog("Modem powered: " + isModemEnabled.toString().toLatin1(), INFO);
-            }
-
-    if(selected_modem.isNull() || selected_modem.isEmpty()) {
-        writeLog("No modem was selected", ERROR);
-        exit(1);
-    }
-
-
-    writeLog("Selected modem: " + selected_modem.toLatin1(), INFO);
-
-    if(isModemEnabled == "false") {
-        QDBusInterface modem_iface("org.ofono", "/", "org.ofono.Modem", bus);
-        QList<QVariant> argumentList;
-        auto reply = modem_iface.call(QString("SetProperty"), QVariant::fromValue(QString("Powered")),
-                                      QVariant::fromValue(QDBusVariant(true)));
-
-        if(!isAnswerValid(reply)){
-            writeLog(reply.errorMessage().toLatin1(), ERROR);
-            exit(1);
-        }
-        writeLog("Modem succesffuly enabled", INFO);
-
-    }
+    /*
 
     QDBusInterface network_iface("org.ofono", selected_modem, "org.ofono.NetworkRegistration", bus);
     QList<QVariant> argumentList;
@@ -141,12 +57,13 @@ int main() {
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
 
-        return callsMonitor();
+        //return callsMonitor();
 
     } else
         return 0;
 }
 
+/*
 bool isAnswerValid(QDBusMessage msg) {
     if(QDBusMessage::ErrorMessage == msg.type()){
         writeLog(msg.errorMessage().toLatin1(), ERROR);
@@ -160,7 +77,7 @@ int callsMonitor() {
     QDBusMessage modem = calls_inface.call("GetCalls");
     setupHandler();
     writeLog("Daemon ends", ERROR);
-}
+}*/
 
 DBusHandlerResult call_added_callback(DBusConnection *con, DBusMessage *msg, void *user_data){
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallAdded"))
@@ -186,9 +103,9 @@ int setupHandler() {
         return EXIT_FAILURE;
     }
 
-    Answer_struct callAddedStruct;
+    //*Answer_struct callAddedStruct;
     writeLog("Listenning to D-BUS signals using a connection filter", INFO);
-    dbus_connection_add_filter(connection, call_added_callback, &callAddedStruct, NULL);
+    dbus_connection_add_filter(connection, call_added_callback, NULL, NULL);
 
     g_main_loop_run(loop);
 
