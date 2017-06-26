@@ -2,7 +2,7 @@
 #include <glib.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
-#include "Struct.h"
+#include "Additional.h"
 #include "Modem.h"
 
 #define INFO 0
@@ -22,25 +22,7 @@ int main() {
 
     Modem current_modem(connection, "/sim900_0");
     current_modem.enableModem();
-
-    /*
-
-    QDBusInterface network_iface("org.ofono", selected_modem, "org.ofono.NetworkRegistration", bus);
-    QList<QVariant> argumentList;
-    QDBusPendingReply<> operators= network_iface
-            .asyncCallWithArgumentList(QStringLiteral("GetOperators"), argumentList);
-    auto reply = operators.argumentAt(0).value<QDBusArgument>();
-    answers = getStructAnswer(reply);
-    QString networkOperator;
-    for(Answer_struct answer : answers)
-        networkOperator = answer.porp_map["Name"].toString();
-
-    std::ofstream operName;
-    operName.open("~//operator.txt");
-    operName << networkOperator.toStdString();
-    operName.close();
-
-    qDebug() << "Operator: " << networkOperator;*/
+    current_modem.getOperator();
 
     int pid = fork();
     if(pid == -1) {
@@ -62,22 +44,6 @@ int main() {
     } else
         return 0;
 }
-
-/*
-bool isAnswerValid(QDBusMessage msg) {
-    if(QDBusMessage::ErrorMessage == msg.type()){
-        writeLog(msg.errorMessage().toLatin1(), ERROR);
-        return false;
-    }
-    return true;
-}
-
-int callsMonitor() {
-    QDBusInterface calls_inface("org.ofono", "/", "org.ofono.Manager", QDBusConnection::systemBus());
-    QDBusMessage modem = calls_inface.call("GetCalls");
-    setupHandler();
-    writeLog("Daemon ends", ERROR);
-}*/
 
 DBusHandlerResult call_added_callback(DBusConnection *con, DBusMessage *msg, void *user_data){
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallAdded"))
@@ -103,7 +69,6 @@ int setupHandler() {
         return EXIT_FAILURE;
     }
 
-    //*Answer_struct callAddedStruct;
     writeLog("Listenning to D-BUS signals using a connection filter", INFO);
     dbus_connection_add_filter(connection, call_added_callback, NULL, NULL);
 
