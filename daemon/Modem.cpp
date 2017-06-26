@@ -1,4 +1,6 @@
 #include <dbus/dbus.h>
+#include <fstream>
+#include <pwd.h>
 #include "Modem.h"
 
 Modem::Modem(DBusConnection *connection, std::string preferedModem) {
@@ -31,7 +33,7 @@ std::vector<g_answer> Modem::allModems() {
     if (!dbus_message_iter_init(msg, &args))
         writeLog("Message has no arguments!\n", INFO);
     std::vector<g_answer> modems;
-    modems = getAnswer(msg, args);
+    getAnswer(msg, args, &modems);
     dbus_message_unref(msg);
     return modems;
 }
@@ -58,7 +60,7 @@ void Modem::getModem() {
                 this->props = modem.props;
                 for (g_prop props : this->props) {
                     if ("Powered" == std::string(props.prop_name.str)){
-                        enabled = props.prop_val.str == "True";
+                        enabled = std::string(props.prop_val.str) == "True";
                         break;
                     }
                 }
@@ -91,7 +93,7 @@ void Modem::enableModem() {
 
     dbus_message_iter_close_container(&args, &subIter);
 
-    if (!dbus_connection_send_with_reply (connection, msg, &pending, -1)) { // -1 is default timeout
+    if (!dbus_connection_send_with_reply (connection, msg, &pending, -1)) {
         writeLog("Out Of Memory!\n", ERROR);
         exit(1);
     }
@@ -102,5 +104,51 @@ void Modem::enableModem() {
     dbus_message_unref(msg);
     enabled = true;
     writeLog("Modem was successfully enabled", INFO);
+}
+
+void Modem::getOperator() {
+    DBusMessageIter args;
+    DBusPendingCall* pending;
+    DBusMessage *msg = dbus_message_new_method_call("org.ofono", name.str,
+                                                    "org.ofono.NetworkRegistration", "GetOperators");
+    isMsgValid(msg);
+
+    if (!dbus_connection_send_with_reply(connection, msg, &pending, 1500)) {
+        writeLog("Out Of Memory!\n", ERROR);
+        exit(1);
+    }
+    if (NULL == pending) {
+        writeLog("Pending Call Null\n", ERROR);
+        exit(1);
+    }
+    dbus_message_unref(msg);
+    dbus_pending_call_block(pending);
+    msg = dbus_pending_call_steal_reply(pending);
+    isMsgValid(msg);
+    dbus_pending_call_unref(pending);
+    if (!dbus_message_iter_init(msg, &args))
+        writeLog("Message has no arguments!\n", INFO);
+    std::vector<g_answer> operators;
+    getAnswer(msg, args, &operators);
+    dbus_message_unref(msg);
+
+    for(g_prop prop : operators[0].props){
+        if("Name" == std::string(prop.prop_name.str))
+            currentOPerator = std::string(prop.prop_val.str);
+    }
+
+    struct passwd *pw = getpwuid(getuid());
+    const char *homedir = pw->pw_dir;
+
+    std::ofstream operName (std::string(homedir) + "//.operator");
+    if(!operName){
+        writeLog("Cannot open .operator file", ERROR);
+        exit(1);
+    }
+
+    operName << currentOPerator << std::endl;
+    operName.close();
+
+    writeLog((std::string("Current operator: ") + currentOPerator).c_str(), INFO);
 }
 

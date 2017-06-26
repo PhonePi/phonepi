@@ -10,7 +10,7 @@
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
 #include <vector>
-#include "Struct.h"
+#include "Additional.h"
 
 class Modem {
 private:
@@ -19,6 +19,7 @@ private:
     bool enabled = false;
     DBusConnection *connection;
     std::string preferedModem;
+    std::string currentOPerator;
     std::vector<g_answer> allModems();
     void getModem();
 
