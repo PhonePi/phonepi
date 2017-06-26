@@ -1,3 +1,4 @@
+
 //
 // Created by arseny on 15.05.17.
 //
@@ -5,6 +6,8 @@
 #ifndef DAEMON_STRUCT_H
 #define DAEMON_STRUCT_H
 
+#include <vector>
+#include <map>
 #include <QMetaType>
 #include <QString>
 #include <QtDBus>
@@ -15,20 +18,41 @@
 #define INFO 0
 #define ERROR -1
 
-static void getAnswer(DBusMessage*, DBusMessageIter);
-static void writeLog(const char*, int);
-
-
 struct Answer_struct{
     QString name;
     QMap<QString, QVariant> porp_map;
 };
 Q_DECLARE_METATYPE(Answer_struct)
 
+struct g_prop{
+    GString prop_name;
+    GString prop_val;
+}props;
+
 struct g_answer{
     GString name;
-    GVariantDict prop_map;
-};
+    std::vector<g_prop> props;
+}stru;
+
+std::vector<g_answer> answ;
+bool value = false;
+
+static void writeLog(const char* message, int status) {
+    openlog("calls_daemon", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+
+    switch(status){
+        case ERROR:
+            syslog(LOG_ERR, message);
+            break;
+        case INFO:
+            syslog(LOG_INFO, message);
+            break;
+        default:
+            syslog(LOG_ALERT, message);
+            break;
+    }
+    closelog();
+}
 
 static std::vector<Answer_struct> getStructAnswer(const QDBusArgument &dbusArgs) {
     QString selected_modem;
@@ -49,69 +73,70 @@ static std::vector<Answer_struct> getStructAnswer(const QDBusArgument &dbusArgs)
     return answers;
 }
 
-static void getAnswer(DBusMessage *msg, DBusMessageIter args){
+static std::vector<g_answer> getAnswer(DBusMessage *msg, DBusMessageIter args){
     if (DBUS_TYPE_ARRAY == dbus_message_iter_get_arg_type(&args)) {
-        writeLog("Message type - array", INFO);
         DBusMessageIter arrayIter;
         dbus_message_iter_recurse(&args, &arrayIter);
-        getAnswer(msg, arrayIter);
+        do {
+            getAnswer(msg, arrayIter);
+        }while (dbus_message_iter_next(&arrayIter));
     }
     if (DBUS_TYPE_STRUCT == dbus_message_iter_get_arg_type(&args)) {
         DBusMessageIter structIter;
         dbus_message_iter_recurse(&args, &structIter);
         getAnswer(msg, structIter);
+        answ.push_back(stru);
     }
     if(DBUS_TYPE_DICT_ENTRY == dbus_message_iter_get_arg_type(&args)) {
         DBusMessageIter dictIter;
         dbus_message_iter_recurse(&args, &dictIter);
         getAnswer(msg, dictIter);
-    }
-    if(DBUS_TYPE_OBJECT_PATH == dbus_message_iter_get_arg_type(&args)) {
-        GObject a;
-        dbus_message_iter_get_basic(&args, &a);
+        stru.props.push_back(props);
         dbus_message_iter_next(&args);
-        getAnswer(msg, args);
-    }
-    if(DBUS_TYPE_STRING == dbus_message_iter_get_arg_type(&args)){
-        std::string a;
-        dbus_message_iter_get_basic(&args, &a);
-        dbus_message_iter_next(&args);
-        getAnswer(msg, args);
     }
     if(DBUS_TYPE_VARIANT == dbus_message_iter_get_arg_type(&args)){
-        std::string a;
+        DBusMessageIter variant;
+        dbus_message_iter_recurse(&args, &variant);
+        value = true;
+        getAnswer(msg, variant);
+        value = false;
+    }
+
+    if(DBUS_TYPE_OBJECT_PATH == dbus_message_iter_get_arg_type(&args)) {
+        GString a;
         dbus_message_iter_get_basic(&args, &a);
+        stru.name = a;
+        dbus_message_iter_next(&args);
+        getAnswer(msg, args);
+    }
+    if(DBUS_TYPE_STRING == dbus_message_iter_get_arg_type(&args)) {
+        GString a;
+        dbus_message_iter_get_basic(&args, &a);
+        if(value)
+            props.prop_val = a;
+
+        else
+            props.prop_name = a;
+
+        if (!dbus_message_iter_has_next(&args))
+            return answ;
+        dbus_message_iter_next(&args);
+        getAnswer(msg, args);
+    }
+    if(DBUS_TYPE_BOOLEAN == dbus_message_iter_get_arg_type(&args)){
+        bool val;
+        dbus_message_iter_get_basic(&args, &val);
+        props.prop_val = *g_string_new(val ? "True" : "False");
+        if(!dbus_message_iter_has_next(&args))
+            return answ;
         dbus_message_iter_next(&args);
         getAnswer(msg, args);
     }
 
-
-    /*if (!dbus_message_iter_next(&args))
-        fprintf(stderr, "Message has too few arguments!\n");
-    else if (DBUS_TYPE_UINT32 != dbus_message_iter_get_arg_type(&args))
-        fprintf(stderr, "Argument is not int!\n");
-    else
-        dbus_message_iter_get_basic(&args, &level);
-
-    printf("Got Reply: %d, %d\n", stat, level);*/
+    return answ;
 }
 
-static void writeLog(const char* message, int status) {
-    openlog("calls_daemon", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 
-    switch(status){
-        case ERROR:
-            syslog(LOG_ERR, message);
-            break;
-        case INFO:
-            syslog(LOG_INFO, message);
-            break;
-        default:
-            syslog(LOG_ALERT, message);
-            break;
-    }
-    closelog();
-}
 
 static DBusConnection* connectToBus(DBusError error){
     dbus_error_init(&error);
