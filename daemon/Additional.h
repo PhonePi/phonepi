@@ -11,16 +11,17 @@
 #define INFO 0
 #define ERROR -1
 
-struct g_prop{
+static struct g_prop{
     GString prop_name;
     GString prop_val;
-};
+} props;
 
-struct g_answer{
+static struct g_answer{
     GString name;
     std::vector<g_prop> props;
-};
+} answer;
 
+static bool value = false;
 static void writeLog(const char* message, int status) {
     openlog("calls_daemon", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 
