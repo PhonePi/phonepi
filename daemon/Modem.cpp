@@ -11,25 +11,6 @@ Modem::Modem(DBus dbus_class, std::string preferedModem) {
 }
 
 std::vector<g_answer> Modem::allModems() {
-    //DBusPendingCall *pending;
-    //DBusMessageIter args;
-
-    /*DBusMessage *msg = dbus_message_new_method_call("org.ofono", "/", "org.ofono.Manager", "GetModems");
-    isMsgValid(msg);
-
-    if (!dbus_connection_send_with_reply(connection, msg, &pending, 1500)) {
-        writeLog("Out Of Memory!\n", ERROR);
-        exit(1);
-    }
-    if (NULL == pending) {
-        writeLog("Pending Call Null\n", ERROR);
-        exit(1);
-    }
-    dbus_message_unref(msg);
-    dbus_pending_call_block(pending);
-    msg = dbus_pending_call_steal_reply(pending);
-    isMsgValid(msg);
-    dbus_pending_call_unref(pending);*/
     DBusMessage *msg = dbus_class.methodCall("org.ofono", "/", "org.ofono.Manager", "GetModems");
     DBusMessageIter args;
     if (!dbus_message_iter_init(msg, &args))
@@ -80,31 +61,8 @@ void Modem::enableModem() {
     if(enabled)
         return;
 
-    /*DBusMessageIter args, subIter;
-    DBusPendingCall* pending;
-    DBusMessage *msg = dbus_message_new_method_call("org.ofono", name.str, "org.ofono.Modem", "SetProperty");
-    isMsgValid(msg);
-
-    dbus_bool_t bolVal = TRUE;
-    std::string prop = "Powered";
-    dbus_message_iter_init_append(msg, &args);
-    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &prop);
-
-    dbus_message_iter_open_container(&args, DBUS_TYPE_VARIANT, DBUS_TYPE_BOOLEAN_AS_STRING, &subIter);
-    dbus_message_iter_append_basic(&subIter, DBUS_TYPE_BOOLEAN, &bolVal);
-
-    dbus_message_iter_close_container(&args, &subIter);
-
-    if (!dbus_connection_send_with_reply (connection, msg, &pending, -1)) {
-        writeLog("Out Of Memory!\n", ERROR);
-        exit(1);
-    }
-    if (NULL == pending) {
-        writeLog("Pending Call Null\n", ERROR);
-        exit(1);
-    }
-    dbus_message_unref(msg);*/
-    dbus_class.methodCallSetBoolProp(std::string("org.ofono").c_str(), name.str,
+    const char* path = std::string(name.str).c_str();
+    dbus_class.methodCallSetBoolProp(std::string("org.ofono").c_str(), path,
                                      std::string("org.ofono.Modem").c_str(), std::string("SetProperty").c_str(),
                                      std::string("Powered"), TRUE);
     enabled = true;
@@ -112,27 +70,8 @@ void Modem::enableModem() {
 }
 
 void Modem::getOperator() {
-    /*DBusMessageIter args;
-    DBusPendingCall* pending;
-    DBusMessage *msg = dbus_message_new_method_call("org.ofono", name.str,
-                                                    "org.ofono.NetworkRegistration", "GetOperators");
-    isMsgValid(msg);
-
-    if (!dbus_connection_send_with_reply(connection, msg, &pending, 1500)) {
-        writeLog("Out Of Memory!\n", ERROR);
-        exit(1);
-    }
-    if (NULL == pending) {
-        writeLog("Pending Call Null\n", ERROR);
-        exit(1);
-    }
-    dbus_message_unref(msg);
-    dbus_pending_call_block(pending);
-    msg = dbus_pending_call_steal_reply(pending);
-    isMsgValid(msg);
-    dbus_pending_call_unref(pending);*/
-
-    DBusMessage *msg = dbus_class.methodCall(std::string("org.ofono").c_str(), name.str,
+    std::string path = std::string(name.str);
+    DBusMessage *msg = dbus_class.methodCall(std::string("org.ofono").c_str(), path.c_str(),
                           std::string("org.ofono.NetworkRegistration").c_str(), std::string("GetOperators").c_str());
     DBusMessageIter args;
 
