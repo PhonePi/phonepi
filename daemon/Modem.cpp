@@ -3,18 +3,18 @@
 #include <pwd.h>
 #include "Modem.h"
 
-Modem::Modem(DBusConnection *connection, std::string preferedModem) {
-    this->connection = connection;
+Modem::Modem(DBus dbus_class, std::string preferedModem) {
+    this->dbus_class = dbus_class;
     this->preferedModem = preferedModem;
 
     getModem();
 }
 
 std::vector<g_answer> Modem::allModems() {
-    DBusPendingCall *pending;
-    DBusMessageIter args;
+    //DBusPendingCall *pending;
+    //DBusMessageIter args;
 
-    DBusMessage *msg = dbus_message_new_method_call("org.ofono", "/", "org.ofono.Manager", "GetModems");
+    /*DBusMessage *msg = dbus_message_new_method_call("org.ofono", "/", "org.ofono.Manager", "GetModems");
     isMsgValid(msg);
 
     if (!dbus_connection_send_with_reply(connection, msg, &pending, 1500)) {
@@ -29,11 +29,13 @@ std::vector<g_answer> Modem::allModems() {
     dbus_pending_call_block(pending);
     msg = dbus_pending_call_steal_reply(pending);
     isMsgValid(msg);
-    dbus_pending_call_unref(pending);
+    dbus_pending_call_unref(pending);*/
+    DBusMessage *msg = dbus_class.methodCall("org.ofono", "/", "org.ofono.Manager", "GetModems");
+    DBusMessageIter args;
     if (!dbus_message_iter_init(msg, &args))
         writeLog("Message has no arguments!\n", INFO);
     std::vector<g_answer> modems;
-    getAnswer(msg, args, &modems);
+    dbus_class.getAnswer(msg, args, &modems);
     dbus_message_unref(msg);
     return modems;
 }
@@ -78,7 +80,7 @@ void Modem::enableModem() {
     if(enabled)
         return;
 
-    DBusMessageIter args, subIter;
+    /*DBusMessageIter args, subIter;
     DBusPendingCall* pending;
     DBusMessage *msg = dbus_message_new_method_call("org.ofono", name.str, "org.ofono.Modem", "SetProperty");
     isMsgValid(msg);
@@ -101,13 +103,16 @@ void Modem::enableModem() {
         writeLog("Pending Call Null\n", ERROR);
         exit(1);
     }
-    dbus_message_unref(msg);
+    dbus_message_unref(msg);*/
+    dbus_class.methodCallSetBoolProp(std::string("org.ofono").c_str(), name.str,
+                                     std::string("org.ofono.Modem").c_str(), std::string("SetProperty").c_str(),
+                                     std::string("Powered"), TRUE);
     enabled = true;
     writeLog("Modem was successfully enabled", INFO);
 }
 
 void Modem::getOperator() {
-    DBusMessageIter args;
+    /*DBusMessageIter args;
     DBusPendingCall* pending;
     DBusMessage *msg = dbus_message_new_method_call("org.ofono", name.str,
                                                     "org.ofono.NetworkRegistration", "GetOperators");
@@ -125,11 +130,16 @@ void Modem::getOperator() {
     dbus_pending_call_block(pending);
     msg = dbus_pending_call_steal_reply(pending);
     isMsgValid(msg);
-    dbus_pending_call_unref(pending);
+    dbus_pending_call_unref(pending);*/
+
+    DBusMessage *msg = dbus_class.methodCall(std::string("org.ofono").c_str(), name.str,
+                          std::string("org.ofono.NetworkRegistration").c_str(), std::string("GetOperators").c_str());
+    DBusMessageIter args;
+
     if (!dbus_message_iter_init(msg, &args))
         writeLog("Message has no arguments!\n", INFO);
     std::vector<g_answer> operators;
-    getAnswer(msg, args, &operators);
+    dbus_class.getAnswer(msg, args, &operators);
     dbus_message_unref(msg);
 
     for(g_prop prop : operators[0].props){
@@ -150,5 +160,11 @@ void Modem::getOperator() {
     operName.close();
 
     writeLog((std::string("Current operator: ") + currentOPerator).c_str(), INFO);
+}
+
+int Modem::getCalls() {
+    dbus_class.methodCall("org.ofono", "/", "org.ofono.Manager", "GetCalls");
+    const char *rule = std::string("type='signal', interface='org.ofono.VoiceCallManager'").c_str();
+    return dbus_class.setUpHandler(rule);
 }
 
