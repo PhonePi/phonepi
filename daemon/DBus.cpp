@@ -1,14 +1,10 @@
-//
-// Created by arseny on 6/27/17.
-//
-
 #include <cstdlib>
 #include "DBus.h"
 
 DBus::DBus() {
     dbus_error_init(&error);
     connection = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
-
+    value = false;
     if (dbus_error_is_set(&error)) {
         char* msg;
         strcpy(msg, "Cannot get System BUS connection: ");
@@ -17,10 +13,14 @@ DBus::DBus() {
         dbus_error_free(&error);
         exit(1);
     }
-    writeLog("Succesfull System BUS connection", INFO);
+    if (NULL == connection) {
+        writeLog("Connection failed", ERROR);
+        exit(1);
+    }
+    writeLog("Successful System BUS connection", INFO);
 }
 
-/*std::vector<g_answer>*/void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answer> *answ){
+void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answer> *answ){
     if (DBUS_TYPE_ARRAY == dbus_message_iter_get_arg_type(&args)) {
         DBusMessageIter arrayIter;
         dbus_message_iter_recurse(&args, &arrayIter);
@@ -30,6 +30,7 @@ DBus::DBus() {
 
     }
     if (DBUS_TYPE_STRUCT == dbus_message_iter_get_arg_type(&args)) {
+        writeLog("StructType", INFO);
         DBusMessageIter structIter;
         dbus_message_iter_recurse(&args, &structIter);
         getAnswer(msg, structIter, answ);
@@ -130,20 +131,53 @@ void DBus::methodCallSetBoolProp(const char* busName, const char* path, const ch
 
     dbus_message_iter_close_container(&args, &subIter);
 
-    if (!dbus_connection_send_with_reply (connection, msg, &pending, -1)) {
+    /*if (!dbus_connection_send_with_reply(connection, msg, &pending, -1)) {
         writeLog("Out Of Memory!\n", ERROR);
         exit(1);
     }
     if (NULL == pending) {
         writeLog("Pending Call Null\n", ERROR);
         exit(1);
+    }*/
+    if(!dbus_connection_send(connection, msg, NULL)){
+        writeLog("Error sending", ERROR);
+        exit(1);
     }
     dbus_message_unref(msg);
 }
 
 DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *user_data) {
-    if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallAdded"))
+    if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallAdded")){
         writeLog("CallAdded callback", INFO);
+        DBusMessageIter args;
+
+        if (!dbus_message_iter_init(msg, &args))
+            writeLog("Message has no arguments!\n", INFO);
+
+        std::vector<g_answer> calls;
+        writeLog(dbus_message_get_signature(msg), INFO);
+        getAnswer(msg, args, &calls);
+        writeLog("After getAnswer in callback", INFO);
+        GString number, state, name;
+
+        for(g_prop props : calls[0].props){
+            if((*g_string_new("LineIdentification")).str == props.prop_name.str){
+                number = props.prop_val;
+            }
+            if((*g_string_new("Name")).str == props.prop_name.str){
+                name = props.prop_val;
+            }
+            if((*g_string_new("State")).str == props.prop_name.str){
+                state = props.prop_val;
+            }
+        }
+        std::string msg = std::string("Call added. Name: ") + name.str
+                          + std::string(" Phone number: ") + number.str
+                          + std::string(" State: ") + state.str;
+        writeLog(msg.c_str(), INFO);
+
+    }
+
 
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved"))
         writeLog("CallRemoved callback", INFO);
