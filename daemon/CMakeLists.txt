@@ -12,7 +12,7 @@ include_directories(/usr/include/dbus-1.0/)
 include_directories(/usr/lib/dbus-1.0/include)
 
 set (LIBS dbus-1 dbus-glib-1)
-set(SOURCE_FILES main.cpp Additional.h Modem.cpp Modem.h)
+set(SOURCE_FILES main.cpp Additional.h Modem.cpp Modem.h DBus.cpp DBus.h)
 
 add_executable(calls_daemon ${SOURCE_FILES})
 
