@@ -33,13 +33,18 @@ int makeargs(const char *args, int *argc, char ***aa) {
 
 void AppRunner::execute() {
     pid_t pid = fork();
+    std::cout << "Running: " << app_.executable << std::endl;
     if (pid == 0) {
-        if (not app_.path.empty()) chdir(app_.path.c_str());
+        if (not app_.path.empty()) {
+            std::cout << "Changing dir: " << app_.path << std::endl;
+            chdir(app_.path.c_str());
+        }
 
         int argc;
         char** argv;
         makeargs(app_.executable.c_str(), &argc, &argv);
 
+        std::cout << "Calling exec" << std::endl;
         execv(argv[0], argv);
     }
 }
