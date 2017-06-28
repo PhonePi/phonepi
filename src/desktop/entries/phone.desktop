@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Phone
-Comment=Flash card based learning tool
-Path=~/Phone/src/phone/qt/
-Exec=phone
-Icon=~/Phone/src/desktop/entries/phoneicon.ico
