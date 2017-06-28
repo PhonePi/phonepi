@@ -13,4 +13,4 @@ target.path = /usr/bin/
 target.files = phone
 sources.files = $$SOURCES $$HEADERS $$RESOURCES phone.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]
-INSTALLS += target 
+INSTALLS += target
