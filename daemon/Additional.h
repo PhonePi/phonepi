@@ -10,6 +10,7 @@
 
 #define INFO 0
 #define ERROR -1
+#define ENDOFLOG writeLog("-------------------", INFO)
 
 static struct g_prop{
     GString prop_name;
