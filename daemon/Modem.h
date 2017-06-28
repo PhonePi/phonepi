@@ -25,7 +25,7 @@ private:
     void getModem();
 
 public:
-    Modem(DBus, std::string);
+    Modem(DBus*, std::string);
     void enableModem();
     void getOperator();
     int getCalls();

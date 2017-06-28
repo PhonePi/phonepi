@@ -3,15 +3,17 @@
 #include <pwd.h>
 #include "Modem.h"
 
-Modem::Modem(DBus dbus_class, std::string preferedModem) {
-    this->dbus_class = dbus_class;
+Modem::Modem(DBus* dbus_class, std::string preferedModem) {
+    this->dbus_class = *dbus_class;
     this->preferedModem = preferedModem;
 
     getModem();
 }
 
 std::vector<g_answer> Modem::allModems() {
-    DBusMessage *msg = dbus_class.methodCall("org.ofono", "/", "org.ofono.Manager", "GetModems");
+    DBusMessage *msg = dbus_class.methodCall(std::string("org.ofono").c_str(),
+                                             std::string("/").c_str(), std::string("org.ofono.Manager").c_str(),
+                                             std::string("GetModems").c_str());
     DBusMessageIter args;
     if (!dbus_message_iter_init(msg, &args))
         writeLog("Message has no arguments!\n", INFO);
@@ -25,6 +27,7 @@ void Modem::getModem() {
     std::vector<g_answer> modems = allModems();
     if(modems.empty()){
         writeLog("No modems were found in the system", ERROR);
+        writeLog("-------------------", INFO);
         exit(1);
     }
 
@@ -65,8 +68,13 @@ void Modem::enableModem() {
     dbus_class.methodCallSetBoolProp(std::string("org.ofono").c_str(), path,
                                      std::string("org.ofono.Modem").c_str(), std::string("SetProperty").c_str(),
                                      std::string("Powered"), TRUE);
-    enabled = true;
-    writeLog("Modem was successfully enabled", INFO);
+    getModem();
+    if(!enabled){
+        writeLog("Enabling failed. Daemon stops", ERROR);
+        writeLog("-------------------", INFO);
+        exit(1);
+    } else
+        writeLog("Enable succeed", INFO);
 }
 
 void Modem::getOperator() {
