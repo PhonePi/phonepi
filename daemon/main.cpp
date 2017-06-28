@@ -7,8 +7,9 @@
 
 int main() {
 
+    writeLog("-------------------", INFO);
     writeLog("Start calls daemon", INFO);
-    DBus dbus_class;
+    DBus *dbus_class = new DBus;
 
     Modem current_modem(dbus_class, "/sim900_0");
     current_modem.enableModem();
@@ -17,6 +18,7 @@ int main() {
     int pid = fork();
     if(pid == -1) {
         writeLog("Daemon launching failed.\n", ERROR);
+        writeLog("-------------------", INFO);
         return -1;
     }
     else if(!pid){
