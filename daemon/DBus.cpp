@@ -10,11 +10,13 @@ DBus::DBus() {
         strcpy(msg, "Cannot get System BUS connection: ");
         strcat(msg, error.message);
         writeLog(msg, ERROR);
+        writeLog("-------------------", INFO);
         dbus_error_free(&error);
         exit(1);
     }
     if (NULL == connection) {
         writeLog("Connection failed", ERROR);
+        writeLog("-------------------", INFO);
         exit(1);
     }
     writeLog("Successful System BUS connection", INFO);
@@ -27,15 +29,15 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
         do {
             getAnswer(msg, arrayIter, answ);
         }while (dbus_message_iter_next(&arrayIter));
-
+        return;
     }
     if (DBUS_TYPE_STRUCT == dbus_message_iter_get_arg_type(&args)) {
-        writeLog("StructType", INFO);
         DBusMessageIter structIter;
         dbus_message_iter_recurse(&args, &structIter);
         getAnswer(msg, structIter, answ);
         answ->push_back(answer);
         answer.props.clear();
+        return;
     }
     if(DBUS_TYPE_DICT_ENTRY == dbus_message_iter_get_arg_type(&args)) {
         DBusMessageIter dictIter;
@@ -43,6 +45,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
         getAnswer(msg, dictIter, answ);
         answer.props.push_back(props);
         dbus_message_iter_next(&args);
+        return;
     }
     if(DBUS_TYPE_VARIANT == dbus_message_iter_get_arg_type(&args)){
         DBusMessageIter variant;
@@ -50,6 +53,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
         value = true;
         getAnswer(msg, variant, answ);
         value = false;
+        return;
     }
 
     if(DBUS_TYPE_OBJECT_PATH == dbus_message_iter_get_arg_type(&args)) {
@@ -58,6 +62,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
         answer.name = a;
         dbus_message_iter_next(&args);
         getAnswer(msg, args, answ);
+        return;
     }
     if(DBUS_TYPE_STRING == dbus_message_iter_get_arg_type(&args)) {
         GString a;
@@ -72,6 +77,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
             return;
         dbus_message_iter_next(&args);
         getAnswer(msg, args, answ);
+        return;
     }
     if(DBUS_TYPE_BOOLEAN == dbus_message_iter_get_arg_type(&args)){
         bool val;
@@ -81,6 +87,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
             return;
         dbus_message_iter_next(&args);
         getAnswer(msg, args, answ);
+        return;
     }
     return;
 }
@@ -88,6 +95,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
 bool DBus::isMsgValid(DBusMessage *msg) {
     if (NULL == msg) {
         writeLog("Message Null\n", ERROR);
+        writeLog("-------------------", INFO);
         exit(1);
     }
     return true;
@@ -99,12 +107,14 @@ DBusMessage* DBus::methodCall(const char* busName, const char* path, const char*
                                                     iface, method);
     isMsgValid(msg);
 
-    if (!dbus_connection_send_with_reply(connection, msg, &pending, 1500)) {
+    if (!dbus_connection_send_with_reply(connection, msg, &pending, -1)) {
         writeLog("Out Of Memory!\n", ERROR);
+        writeLog("-------------------", INFO);
         exit(1);
     }
     if (NULL == pending) {
         writeLog("Pending Call Null\n", ERROR);
+        writeLog("-------------------", INFO);
         exit(1);
     }
     dbus_message_unref(msg);
@@ -113,6 +123,7 @@ DBusMessage* DBus::methodCall(const char* busName, const char* path, const char*
 
     isMsgValid(msg);
     dbus_pending_call_unref(pending);
+    dbus_connection_flush(connection);
     return msg;
 }
 
@@ -131,19 +142,23 @@ void DBus::methodCallSetBoolProp(const char* busName, const char* path, const ch
 
     dbus_message_iter_close_container(&args, &subIter);
 
-    /*if (!dbus_connection_send_with_reply(connection, msg, &pending, -1)) {
+    if(!dbus_connection_send_with_reply_and_block(connection, msg, -1, &error)){
         writeLog("Out Of Memory!\n", ERROR);
+        writeLog("-------------------", INFO);
         exit(1);
     }
-    if (NULL == pending) {
-        writeLog("Pending Call Null\n", ERROR);
-        exit(1);
-    }*/
-    if(!dbus_connection_send(connection, msg, NULL)){
-        writeLog("Error sending", ERROR);
+    if (dbus_error_is_set(&error)) {
+        char* msg;
+        strcpy(msg, "Cannot send message: ");
+        strcat(msg, error.message);
+        writeLog(msg, ERROR);
+        writeLog("-------------------", INFO);
+        dbus_error_free(&error);
         exit(1);
     }
+    dbus_connection_flush(connection);
     dbus_message_unref(msg);
+    sleep(5);
 }
 
 DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *user_data) {
@@ -156,7 +171,7 @@ DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *u
 
         std::vector<g_answer> calls;
         writeLog(dbus_message_get_signature(msg), INFO);
-        getAnswer(msg, args, &calls);
+        DBus::getAnswer(msg, args, &calls);
         writeLog("After getAnswer in callback", INFO);
         GString number, state, name;
 
@@ -178,7 +193,6 @@ DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *u
 
     }
 
-
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved"))
         writeLog("CallRemoved callback", INFO);
 
@@ -197,8 +211,9 @@ int DBus::setUpHandler(const char * rule) {
         strcpy(msg, "Cannot add D-BUS match rule, cause: ");
         strcat(msg, error.message);
         writeLog(msg, ERROR);
+        writeLog("-------------------", INFO);
         dbus_error_free(&error);
-        return EXIT_FAILURE;
+        exit(1);
     }
 
     writeLog(std::string("Listening to D-BUS signals using a connection filter").c_str(), INFO);
