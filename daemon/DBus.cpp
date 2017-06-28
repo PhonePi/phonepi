@@ -6,17 +6,17 @@ DBus::DBus() {
     connection = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
     value = false;
     if (dbus_error_is_set(&error)) {
-        char* msg;
-        strcpy(msg, "Cannot get System BUS connection: ");
-        strcat(msg, error.message);
-        writeLog(msg, ERROR);
-        writeLog("-------------------", INFO);
+        char* message;
+        strcpy(message, "Cannot get System BUS connection: ");
+        strcat(message, error.message);
+        writeLog(message, ERROR);
+        ENDOFLOG;
         dbus_error_free(&error);
         exit(1);
     }
     if (NULL == connection) {
         writeLog("Connection failed", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     }
     writeLog("Successful System BUS connection", INFO);
@@ -29,14 +29,21 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
         do {
             getAnswer(msg, arrayIter, answ);
         }while (dbus_message_iter_next(&arrayIter));
+
+        for(g_answer answer1 : *answ){
+            if(answer1.name.str == answer.name.str)
+                return;
+        }
+        answ->push_back(answer);
+        answer.props.clear();
         return;
     }
     if (DBUS_TYPE_STRUCT == dbus_message_iter_get_arg_type(&args)) {
         DBusMessageIter structIter;
         dbus_message_iter_recurse(&args, &structIter);
         getAnswer(msg, structIter, answ);
-        answ->push_back(answer);
-        answer.props.clear();
+        //answ->push_back(answer);
+        //answer.props.clear();
         return;
     }
     if(DBUS_TYPE_DICT_ENTRY == dbus_message_iter_get_arg_type(&args)) {
@@ -95,7 +102,7 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
 bool DBus::isMsgValid(DBusMessage *msg) {
     if (NULL == msg) {
         writeLog("Message Null\n", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     }
     return true;
@@ -109,12 +116,12 @@ DBusMessage* DBus::methodCall(const char* busName, const char* path, const char*
 
     if (!dbus_connection_send_with_reply(connection, msg, &pending, -1)) {
         writeLog("Out Of Memory!\n", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     }
     if (NULL == pending) {
         writeLog("Pending Call Null\n", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     }
     dbus_message_unref(msg);
@@ -130,7 +137,6 @@ DBusMessage* DBus::methodCall(const char* busName, const char* path, const char*
 void DBus::methodCallSetBoolProp(const char* busName, const char* path, const char* iface, const char* method,
                                  std::string prop, dbus_bool_t boolVal){
     DBusMessageIter args, subIter;
-    DBusPendingCall* pending;
     DBusMessage *msg = dbus_message_new_method_call(busName, path, iface, method);
     isMsgValid(msg);
 
@@ -144,15 +150,15 @@ void DBus::methodCallSetBoolProp(const char* busName, const char* path, const ch
 
     if(!dbus_connection_send_with_reply_and_block(connection, msg, -1, &error)){
         writeLog("Out Of Memory!\n", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     }
     if (dbus_error_is_set(&error)) {
-        char* msg;
-        strcpy(msg, "Cannot send message: ");
-        strcat(msg, error.message);
-        writeLog(msg, ERROR);
-        writeLog("-------------------", INFO);
+        char* messsage;
+        strcpy(messsage, "Cannot send message: ");
+        strcat(messsage, error.message);
+        writeLog(messsage, ERROR);
+        ENDOFLOG;
         dbus_error_free(&error);
         exit(1);
     }
@@ -170,27 +176,25 @@ DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *u
             writeLog("Message has no arguments!\n", INFO);
 
         std::vector<g_answer> calls;
-        writeLog(dbus_message_get_signature(msg), INFO);
         DBus::getAnswer(msg, args, &calls);
-        writeLog("After getAnswer in callback", INFO);
-        GString number, state, name;
+        GString number, state;
+
+        if(calls.size() == 0){
+            writeLog("No calls found", ERROR);
+            ENDOFLOG;
+        }
 
         for(g_prop props : calls[0].props){
-            if((*g_string_new("LineIdentification")).str == props.prop_name.str){
+            if(std::string("LineIdentification") == std::string(props.prop_name.str))
                 number = props.prop_val;
-            }
-            if((*g_string_new("Name")).str == props.prop_name.str){
-                name = props.prop_val;
-            }
-            if((*g_string_new("State")).str == props.prop_name.str){
+            
+            if(std::string("State") == std::string(props.prop_name.str))
                 state = props.prop_val;
-            }
         }
-        std::string msg = std::string("Call added. Name: ") + name.str
+        std::string message = std::string("Call added.")
                           + std::string(" Phone number: ") + number.str
                           + std::string(" State: ") + state.str;
-        writeLog(msg.c_str(), INFO);
-
+        writeLog(message.c_str(), INFO);
     }
 
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved"))
@@ -207,11 +211,11 @@ int DBus::setUpHandler(const char * rule) {
     dbus_bus_add_match(connection, rule, &error);
 
     if(dbus_error_is_set(&error)){
-        char* msg;
-        strcpy(msg, "Cannot add D-BUS match rule, cause: ");
-        strcat(msg, error.message);
-        writeLog(msg, ERROR);
-        writeLog("-------------------", INFO);
+        char* message;
+        strcpy(message, "Cannot add D-BUS match rule, cause: ");
+        strcat(message, error.message);
+        writeLog(message, ERROR);
+        ENDOFLOG;
         dbus_error_free(&error);
         exit(1);
     }
