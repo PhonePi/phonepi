@@ -22,11 +22,4 @@ target_link_libraries(desktop-pi inih)
 qt5_use_modules(desktop-pi Widgets)
 
 install(TARGETS desktop-pi EXPORT desktop-pi DESTINATION bin)
-install(FILES config.ini
-        DESTINATION $ENV{HOME}/.config/
-        RENAME desktop-pi
-        PERMISSIONS OWNER_READ OWNER_WRITE)
-install(FILES resourses/background.png
-        DESTINATION /usr/share/${PROJECT_NAME}
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ WORLD_WRITE)
 

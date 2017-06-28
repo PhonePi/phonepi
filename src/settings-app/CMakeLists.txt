@@ -21,9 +21,3 @@ qt5_use_modules(settings-pi  Widgets)
 target_link_libraries(settings-pi ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS settings-pi EXPORT settings-pi DESTINATION bin)
-install(FILES entry/settings-pi.desktop
-        DESTINATION $ENV{HOME}/.local/share/applications
-        PERMISSIONS OWNER_READ OWNER_WRITE)
-install(FILES entry/settings-pi.png
-        DESTINATION $ENV{HOME}/.local/share/icons
-        PERMISSIONS OWNER_READ OWNER_WRITE)
