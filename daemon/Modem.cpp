@@ -27,7 +27,7 @@ void Modem::getModem() {
     std::vector<g_answer> modems = allModems();
     if(modems.empty()){
         writeLog("No modems were found in the system", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     }
 
@@ -71,7 +71,7 @@ void Modem::enableModem() {
     getModem();
     if(!enabled){
         writeLog("Enabling failed. Daemon stops", ERROR);
-        writeLog("-------------------", INFO);
+        ENDOFLOG;
         exit(1);
     } else
         writeLog("Enable succeed", INFO);
