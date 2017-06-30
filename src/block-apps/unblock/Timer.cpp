@@ -20,9 +20,10 @@ std::string double_digit(int num) {
 
 std::string getCurrentTime() {
     static const std::string DAY[]= {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    static const std::string MONTH[]= {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    static const std::string MONTH[]= {"January", "February", "March", "April", "May", "June", "July", "August",
+                                       "September", "October", "November", "December"};
     time_t t = time(0);
-    struct tm * now = localtime( & t );
+    struct tm* now = localtime(&t);
     std::ostringstream ss;
     ss << double_digit(now->tm_hour) << ':' << double_digit(now->tm_min) << std::endl;
     ss << DAY[now->tm_wday] << ", " << now->tm_mday << " " << MONTH[now->tm_mon];
