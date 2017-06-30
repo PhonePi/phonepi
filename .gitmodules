@@ -1,3 +1,6 @@
 [submodule "src/desktop/inih"]
 	path = src/desktop/inih
 	url = https://git.ejiek.com/KSPT/inih.git
+[submodule "src/block-apps/unblock/inih"]
+	path = src/block-apps/unblock/inih
+	url = gitlab@git.ejiek.com:KSPT/inih.git
