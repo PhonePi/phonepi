@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -14,16 +15,21 @@
 #include <math.h>
 #include <pthread.h>
 
-pthread_mutex_t lockI2C; // mutex for critical section
+#define RTC_BUF_SIZE 19             // size of buffer for RTC`s answer
+
+pthread_mutex_t lockI2C;            // mutex for critical section
 
 // i2c.general
 #define I2C_BUS      "/dev/i2c-1"   // path to i2c bus
-#define I2C_DIGISPARK_ADR   0x26    // The I2C slaveAdress
+#define I2C_DIGISPARK_ADR   0x26    // The I2C adress of Digispark
+#define I2C_RTC_ADR         0x68    // The I2C adress of RTC-module
+
 // i2c.commands
 #define I2C_CMD_BATTERY     0xBB    // "Check battery status" (frequency == 60 sec.)
 #define I2C_CMD_CHECK       0xCC    // "Check general status" (frequency == 1 sec.)
 #define I2C_CMD_BRIGTH      0xDD    // "Set display brightness" (async.)
 #define I2C_CMD_SHUT        0x88    // "RPi shut down" (async.)
+#define I2C_CMD_TEMP        0x36    // "Get Temperature" (async.)
 
 #define XXON_OFF    "/bin/xxoff"
 
@@ -37,6 +43,8 @@ int warnMCU(void);
 void powerOff(void);
 // function for execution of request to User
 void askTheUser();
+// function for getting of RTC-module`s temperature
+int getTempRTC(char *temperature);
 
 void *thrdCheckFun(void *arg);
 
@@ -96,7 +104,7 @@ int main(int argc, char *argv[]) {
             switch (buf[0]) {
                 // I2C_CMD_BATTERY-command "Check battery status" (frequency == 60 sec.)
                 case I2C_CMD_BATTERY:
-                    printf("I2C_CMD_BATTERY, batteryChargeLvl=%d\n", batteryChargeLvl); // from 0 to 100
+                    //printf("I2C_CMD_BATTERY, batteryChargeLvl=%d\n", batteryChargeLvl); // from 0 to 100
                     if (write(cl, &batteryChargeLvl, 1) != 1)           // send info about Battery charge to client
                         printf("write error;\n");
                     break;
@@ -105,7 +113,7 @@ int main(int argc, char *argv[]) {
                 // I2C_CMD_CHECK-command "Check general status" (frequency == 1 sec.)
                 // "status" - result of I2C_CMD_CHECK-command executed in another thread
                 case I2C_CMD_CHECK:
-                    printf("I2C_CMD_CHECK, status=%d\n", status);
+                    //printf("I2C_CMD_CHECK, status=%d\n", status);
                     if (write(cl, &status, 1) != 1)     // send Status to client
                         printf("write error;\n");
                     break;
@@ -113,12 +121,12 @@ int main(int argc, char *argv[]) {
 
                 // I2C_CMD_BRIGTH-command "Set display brightness" (async.)
                 case I2C_CMD_BRIGTH:
-                    printf("I2C_CMD_BRIGTH, ");
+                    //printf("I2C_CMD_BRIGTH, ");
 
                     pthread_mutex_lock(&lockI2C);       // lock I2C-bus
                     buf[0] = setDispBrightness(buf[1]); // from 0 to 100
                     pthread_mutex_unlock(&lockI2C);     // unlock I2C-bus
-                    printf("setDispBrightness()=%d\n", buf[0]);
+                    //printf("setDispBrightness()=%d\n", buf[0]);
 
                     if (write(cl, buf, 1) != 1)         // send result of operation to client
                         printf("write error;\n");
@@ -141,13 +149,28 @@ int main(int argc, char *argv[]) {
                         powerOff();
                     break;
 
+                // I2C_CMD_TEMP-command "get temperature from RTC" (async.)
+                case I2C_CMD_TEMP:
+                    //printf("I2C_CMD_TEMP, ");
+
+                    pthread_mutex_lock(&lockI2C);       // lock I2C-bus
+                    if (getTempRTC(buf) != 0) {         // return temperature of RTC-module
+                        buf[0] = 0xFF;                  // set invalid value of temperature
+                        buf[1] = 0xFF;
+                    }
+                    pthread_mutex_unlock(&lockI2C);     // unlock I2C-bus
+
+                    if (write(cl, buf, 2) != 2)         // send result of operation to client
+                        printf("write error;\n");
+                    break;
+
                 // INVALID command
                 default:
-                    printf("default\n");
+                    printf("INVALID command\n");
                     write(cl, buf, 1);                  // resend bad command to client
                     break;
             }
-            printf("read %u bytes: %.*s\n", rc, rc, buf);
+            //printf("read %u bytes: %.*s\n", rc, rc, buf);
         }
 
 
@@ -180,18 +203,21 @@ void *thrdCheckFun(void *arg) {
         // open bus
         if ((i2cBusDesc = open(I2C_BUS, O_RDWR)) < 0) {
             printf("Failed to open the bus.\n");
+            pthread_mutex_unlock(&lockI2C);
             goto waiting;
         }
 
         // get access to slave with address I2C_DIGISPARK_ADR
         if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0) {
             printf("Failed to get access to the slave (%x).\n", I2C_DIGISPARK_ADR);
+            pthread_mutex_unlock(&lockI2C);
             goto waiting;
         }
 
         // write cmd
         if (write(i2cBusDesc, &buf, 1) != 1) {
             printf("Failed to write to the i2c bus.\n");
+            pthread_mutex_unlock(&lockI2C);
             goto waiting;
         }
         usleep(100000);
@@ -199,6 +225,7 @@ void *thrdCheckFun(void *arg) {
         // read answer
         if (read(i2cBusDesc, &buf, 1) != 1) {
             printf("Failed to read to the i2c bus.\n");
+            pthread_mutex_unlock(&lockI2C);
             goto waiting;
         }
         pthread_mutex_unlock(&lockI2C);
@@ -225,6 +252,7 @@ void *thrdCheckFun(void *arg) {
 waiting:
         usleep(1000000);    // 1sec
         batteryCheckCnt++;
+        close(i2cBusDesc);
     }
 }
 
@@ -240,21 +268,28 @@ char getBatteryChargeLvl(void) {
         return -1;  // Failed to open the bus
 
     // get access to slave with address I2C_DIGISPARK_ADR
-    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0)
+    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0) {
+        close(i2cBusDesc);
         return -2;  // Failed to get access to the slave (I2C_DIGISPARK_ADR)
+    }
 
     // write cmd
     buf[0] = (int)I2C_CMD_BATTERY;
-    if (write(i2cBusDesc, buf, 1) != 1)
+    if (write(i2cBusDesc, buf, 1) != 1) {
+        close(i2cBusDesc);
         return -3;  // Failed to write to the i2c bus.
+    }
 
     // time-delay (waiting ADC)
     usleep(400000);
 
     // read answer
-    if (read(i2cBusDesc, buf, 2) != 2)
+    if (read(i2cBusDesc, buf, 2) != 2) {
+        close(i2cBusDesc);
         return -4;  // Failed to read to the i2c bus
+    }
 
+    close(i2cBusDesc);
     // convert ADC data and return "Battery charge level"
     batteryLvl = ((int)buf[1] & 0x00FF) | ((int)buf[0] << 8 & 0xFF00);      // ADC data (0-1024)
     return (char)(((double) batteryLvl) / 10.24);   // "Battery charge level"
@@ -277,8 +312,10 @@ int setDispBrightness(char brightValue) {
         return -1;  // Failed to open the bus
 
     // get access to slave with address I2C_DIGISPARK_ADR
-    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0)
+    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0) {
+        close(i2cBusDesc);
         return -2;  // Failed to get access to the slave (I2C_DIGISPARK_ADR)
+    }
 
     // clear i2c bus
     for (int i = 0; i<10; i++)
@@ -287,15 +324,20 @@ int setDispBrightness(char brightValue) {
     // write cmd
     buf[0] = (int)I2C_CMD_BRIGTH;
     buf[1] = (char) converter;//( ((int)brightValue) * 255) / 100;
-    if (write(i2cBusDesc, buf, 2) != 2)
+    if (write(i2cBusDesc, buf, 2) != 2) {
+        close(i2cBusDesc);
         return -3;  // Failed to write to the i2c bus.
+    }
 
     // time-delay (waintig of execution)
     usleep(300000);
 
     // read answer
-    if (read(i2cBusDesc, buf, 1) != 1)
+    if (read(i2cBusDesc, buf, 1) != 1) {
+        close(i2cBusDesc);
         return -4;  // Failed to read to the i2c bus
+    }
+    close(i2cBusDesc);
 
     // check result
     if (buf[0] != (char) converter) {
@@ -321,20 +363,28 @@ int warnMCU(void) {
         return -1;  // Failed to open the bus
 
     // get access to slave with address I2C_DIGISPARK_ADR
-    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0)
+    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_DIGISPARK_ADR) < 0) {
+        close(i2cBusDesc);
         return -2;  // Failed to get access to the slave (I2C_DIGISPARK_ADR)
+    }
 
     // write cmd
     buf[0] = (int)I2C_CMD_SHUT;
-    if (write(i2cBusDesc, buf, 1) != 1)
+    if (write(i2cBusDesc, buf, 1) != 1) {
+        close(i2cBusDesc);
         return -3;  // Failed to write to the i2c bus.
+    }
 
     // time-delay (waintig of execution)
     usleep(300000);
 
     // read answer
-    if (read(i2cBusDesc, buf, 1) != 1)
+    if (read(i2cBusDesc, buf, 1) != 1) {
+        close(i2cBusDesc);
         return -4;  // Failed to read to the i2c bus
+    }
+
+    close(i2cBusDesc);
 
     // check result
     if ((int)buf[0] != I2C_CMD_SHUT)
@@ -343,6 +393,42 @@ int warnMCU(void) {
     // time-delay (measures for protection of I2C-bus)
     usleep(200000);
 
+    return 0;
+}
+
+
+// function for getting of temperature (in degrees)
+int getTempRTC(char *temperature) {
+    size_t RTC_RTC_BUF_SIZE = 19;        // 0x00 to 0x13
+    int i2cBusDesc = -1;                 // descriptor of RTC-module on the I2C-bus
+    char buf[RTC_RTC_BUF_SIZE] = {0};    // buffer for transmission through I2C
+
+    // open bus
+    if ((i2cBusDesc = open(I2C_BUS, O_RDWR)) < 0)
+        return -1;  // Failed to open the bus
+
+    // get access to slave with address I2C_RTC_ADR
+    if (ioctl(i2cBusDesc, I2C_SLAVE, I2C_RTC_ADR) < 0) {
+        close(i2cBusDesc);
+        return -2;  // Failed to get access to the slave (I2C_RTC_ADR)
+    }
+
+    // write cmd
+    if (write(i2cBusDesc, buf, 1) != 1) {// send 0x00
+        //perror("write(i2cBusDesc, buf, 1); error");
+        close(i2cBusDesc);
+        return -3;  // Failed to write to the i2c bus.
+    }
+
+    // read answer
+    if (read(i2cBusDesc, buf, RTC_RTC_BUF_SIZE) != RTC_RTC_BUF_SIZE) {
+        close(i2cBusDesc);
+        return -4;  // Failed to read to the i2c bus
+    }
+
+    // note that 0x11 = 17 decimal and 0x12 = 18 decimal
+    temperature[0] = buf[0x11];
+    temperature[1] = buf[0x12];
     return 0;
 }
 
