@@ -31,7 +31,9 @@ pthread_mutex_t lockI2C;            // mutex for critical section
 #define I2C_CMD_SHUT        0x88    // "RPi shut down" (async.)
 #define I2C_CMD_TEMP        0x36    // "Get Temperature" (async.)
 
-#define XXON_OFF    "/bin/xxoff"
+#define XXON_OFF            "/bin/xxoff"
+#define XXON_BLOCK          "/usr/bin/block-pi"
+#define XXON_TITLE          "/usr/bin/unblock-pi"
 
 // function for getting "Battery charge level" (int percent 0-100)
 char getBatteryChargeLvl(void);
@@ -42,7 +44,7 @@ int warnMCU(void);
 // function for Shutdown the System
 void powerOff(void);
 // function for execution of request to User
-void askTheUser();
+void execlProc(const char *path);
 // function for getting of RTC-module`s temperature
 int getTempRTC(char *temperature);
 
@@ -231,11 +233,19 @@ void *thrdCheckFun(void *arg) {
         pthread_mutex_unlock(&lockI2C);
     // *** unlocked ***
 
+        // just for button`s event
+        if ((int)status != (int)buf) {
+            // block or unblock display
+            if ((buf & 0x01) != 0x01)
+                execlProc(XXON_BLOCK);
+            else
+                execlProc(XXON_TITLE);
+        }
+
         // update the status of MCU
         status = buf;
         // try to power off the RPi
-        if ((buf & 0x02) != 0x02)
-            askTheUser();
+        if ((buf & 0x02) != 0x02) execlProc(XXON_OFF);
 
         // check battery status each 60 sec
         if (batteryCheckCnt >= 60) {
@@ -441,16 +451,15 @@ void powerOff(void) {
 
 
 // function for execution of request to User
-void askTheUser() {
-  if (fork() == 0) {            // execl xxon
-    execl(XXON_OFF,             // name of program
-          XXON_OFF,             // program`s agrs
-          NULL
-    );
+void execlProc(const char *path) {
+    if (fork() == 0) {     // execl xxon
+        execl(  path,      // name of program
+                path,      // program`s agrs
+                NULL);
 
-    // if something went wrong
-    printf("askTheUserL errno=%d\n", errno);
-    exit(-1);
-  }
+        // if something went wrong
+        printf("execlProc errno=%d\n", errno);
+        exit(-1);
+    }
     return;
 }
