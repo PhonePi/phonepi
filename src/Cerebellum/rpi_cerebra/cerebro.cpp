@@ -363,7 +363,7 @@ void askTheUser() {
     );
 
     // if something went wrong
-    cout << "askTheUser: errno=" << errno << "; " << endl;
+    printf("askTheUserL errno=%d\n", errno);
     exit(-1);
   }
     return;
