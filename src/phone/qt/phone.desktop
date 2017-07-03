@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Phone
+Comment=Dialer application for ofono
+Path=/usr/bin
+Exec=phone
+Icon=~/.local/share/icons/phoneicon.ico

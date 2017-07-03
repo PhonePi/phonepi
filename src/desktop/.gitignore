@@ -1,0 +1,13 @@
+.idea/
+.qmake.stash
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake-build-debug/
+cmake_install.cmake
+desktop-pi
+desktop-pi_autogen/
+desktop-pi.cbp
+desktop-pi_automoc.cpp
+desktop-pi_automoc.dir/
+

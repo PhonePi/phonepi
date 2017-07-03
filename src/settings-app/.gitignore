@@ -1,0 +1,13 @@
+.idea/
+.qmake.stash
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake-build-debug/
+cmake_install.cmake
+settings-pi
+settings-pi_autogen/
+settings-pi.cbp
+settings-pi_automoc.cpp
+settings-pi_automoc.dir/
+
