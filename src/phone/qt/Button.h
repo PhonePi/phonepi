@@ -12,8 +12,8 @@ class Button : public QPushButton{
     Q_OBJECT
 public:
     Button(QWidget * parent = 0);
-    QPushButton* createButtonIco(char*, QSize);
-    QGridLayout createButtonGrid(int, int);
+    QPushButton* createButtonIco(std::string, QSize);
+    QLayout* createButtonGrid(int, int);
 
 private:
     std::string numbers[12] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"};

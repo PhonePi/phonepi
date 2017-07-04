@@ -12,36 +12,37 @@ Button::Button(QWidget *parent)
 {
 }
 
-QGridLayout Button::createButtonGrid(int parentWidth, int parentHeight){
+QLayout* Button::createButtonGrid(int parentWidth, int parentHeight){
     QGridLayout *layout = new QGridLayout();
     layout->setVerticalSpacing(2);
     layout->setHorizontalSpacing(2);
 
     std::string fontcolor = "QLabel { color : black; }";
     int k = 0;
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < 4; j++){
-            QLabel *caption = new QLabel(numbers[k].c_str());
+    for(int i = 0; i < 4; i++) {
+        for (int j = 0; j < 3; j++) {
+            QPushButton *button = new QPushButton(numbers[k].c_str());
             k++;
-            caption->setStyleSheet(QString(fontcolor.c_str()));
-            QFont font = caption->font();
+            button->setStyleSheet(QString(fontcolor.c_str()));
+            QFont font = button->font();
             font.setPointSize(20);
             font.setBold(true);
-            caption->setFont(font);
+            button->setFont(font);
 
-            layout->addWidget(caption, i, j, Qt::AlignCenter);
+            layout->addWidget(button, i, j, Qt::AlignCenter);
         }
+    }
 
-
+    return layout;
 }
 
-QPushButton* Button::createButtonIco(char* iconPath, QSize size){
+QPushButton* Button::createButtonIco(std::string iconPath, QSize size){
     QPushButton *button = new QPushButton();
-    QPixmap backPict(iconPath);
+    QPixmap backPict(iconPath.c_str());
     QIcon backIcon(backPict);
     button->setIcon(backIcon);
     button->setIconSize(size);
-    button->setStyleSheet("QPushButton {background-color:transparent;}");
+    //button->setStyleSheet("QPushButton {background-color:transparent;}");
 
     return button;
 }
