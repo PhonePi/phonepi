@@ -1,5 +1,6 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QScreen>
 #include "mainwindow.h"
 #include "Button.h"
 
@@ -27,12 +28,27 @@ MainWindow::MainWindow(QWidget *parent)
     textLayout->addWidget(phoneNumber, 0, 1, Qt::AlignCenter);
     textLayout->addWidget(erase, 0, 2, Qt::AlignLeft);
 
+    buttonLayout = (QGridLayout*)btn.createButtonGrid(50,50);
 
+    commonLayout = new QGridLayout();
+    commonLayout->addLayout(textLayout, 0, 0, Qt::AlignCenter);
+    commonLayout->addLayout(buttonLayout, 0, 1, Qt::AlignCenter);
 }
 
 MainWindow::~MainWindow()
-{
+{}
 
+void MainWindow::showDialer(){
+    mainWindow = new QWidget();
+    mainWindow->setLayout(commonLayout);
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int width = screenGeometry.width();
+    int height = screenGeometry.height();
+
+    mainWindow->setFixedSize(width, height);
+    mainWindow->activateWindow();
+    mainWindow->show();
 }
 
 void MainWindow::dialNumber(QString call_number)

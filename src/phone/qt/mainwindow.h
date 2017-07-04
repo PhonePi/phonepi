@@ -25,9 +25,10 @@ public:
     QWidget *buttonField;
     QGridLayout *textLayout;
     QGridLayout *buttonLayout;
-    QVBoxLayout *commonLayout;
+    QGridLayout *commonLayout;
 
     void dialNumber(QString number);
+    void showDialer();
 
 public slots:
     void back();
