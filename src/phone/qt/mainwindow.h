@@ -20,19 +20,12 @@ class MainWindow : public QWidget{
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QWidget *mainWindow;
-    QWidget *textField;
-    QWidget *buttonField;
-    QGridLayout *textLayout;
-    QGridLayout *buttonLayout;
-    QGridLayout *commonLayout;
-
-    void dialNumber(QString number);
     void showDialer();
 
 public slots:
     void back();
     void erase();
+    void dialNumber();
 
 private:
     //QDBusConnection bus = QDBusConnection::systemBus();
@@ -40,5 +33,11 @@ private:
 	QString dialedNumber;
     QLabel *phoneNumber;
     std::string workingDir = "//home//arseny//Repos//KSPT//Phone//src//phone//qt//";
+    QGridLayout *textLayout;
+    QGridLayout *buttonLayout;
+    QGridLayout *commonLayout;
+    QWidget *mainWindow;
+    QWidget *textField;
+    QWidget *buttonField;
 };
 #endif // MAINWINDOW_H

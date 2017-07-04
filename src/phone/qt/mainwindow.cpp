@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton *erase = btn.createButtonIco(workingDir + "pics//erase.png", QSize(70, 70));
     connect(erase, SIGNAL(clicked()), this, SLOT(erase()));
 
+    QPushButton *dial = btn.createButtonIco(workingDir + "pics//dial.png", QSize(70, 70));
+    connect(dial, SIGNAL(clicked()), this, SLOT(dialNumber()));
+
     phoneNumber = new QLabel();
     QFont textFont = phoneNumber->font();
     textFont.setPointSize(30);
@@ -28,7 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
     textLayout->addWidget(phoneNumber, 0, 1, Qt::AlignCenter);
     textLayout->addWidget(erase, 0, 2, Qt::AlignLeft);
 
-    buttonLayout = (QGridLayout*)btn.createButtonGrid(50,50);
+    buttonLayout = (QGridLayout*)btn.createButtonGrid();
+    int cols = buttonLayout->columnCount();
+    int rows = buttonLayout->rowCount();
+    buttonLayout->addWidget(dial, rows, cols/2, Qt::AlignCenter);
+
 
     commonLayout = new QGridLayout();
     commonLayout->addLayout(textLayout, 0, 0, Qt::AlignCenter);
@@ -51,9 +58,10 @@ void MainWindow::showDialer(){
     mainWindow->show();
 }
 
-void MainWindow::dialNumber(QString call_number)
+void MainWindow::dialNumber()
 {
-	if(call_number.isEmpty() || call_number.isNull())
+    dialedNumber = phoneNumber->text();
+	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
 
     //load(QUrl("qrc:///qml/dialing.qml"));
