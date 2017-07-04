@@ -12,7 +12,7 @@ Button::Button(QWidget *parent)
 {
 }
 
-QLayout* Button::createButtonGrid(int parentWidth, int parentHeight){
+QLayout* Button::createButtonGrid(){
     QGridLayout *layout = new QGridLayout();
     layout->setVerticalSpacing(2);
     layout->setHorizontalSpacing(2);
@@ -28,6 +28,10 @@ QLayout* Button::createButtonGrid(int parentWidth, int parentHeight){
             font.setPointSize(20);
             font.setBold(true);
             button->setFont(font);
+            //button->setStyleSheet("QPushButton {background-color:transparent;}");
+
+            button->setFixedSize(70, 70);
+            connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
             layout->addWidget(button, i, j, Qt::AlignCenter);
         }
@@ -42,7 +46,11 @@ QPushButton* Button::createButtonIco(std::string iconPath, QSize size){
     QIcon backIcon(backPict);
     button->setIcon(backIcon);
     button->setIconSize(size);
-    //button->setStyleSheet("QPushButton {background-color:transparent;}");
+    button->setFixedSize(size);
 
     return button;
+}
+
+void Button::buttonClicked() {
+    //Get button caption that rised this signal
 }

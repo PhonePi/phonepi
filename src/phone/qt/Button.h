@@ -13,7 +13,10 @@ class Button : public QPushButton{
 public:
     Button(QWidget * parent = 0);
     QPushButton* createButtonIco(std::string, QSize);
-    QLayout* createButtonGrid(int, int);
+    QLayout* createButtonGrid();
+
+public slots:
+    void buttonClicked();
 
 private:
     std::string numbers[12] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"};
