@@ -39,5 +39,6 @@ private:
     QString selected_modem;
 	QString dialedNumber;
     QLabel *phoneNumber;
+    std::string workingDir = "//home//arseny//Repos//KSPT//Phone//src//phone//qt//";
 };
 #endif // MAINWINDOW_H

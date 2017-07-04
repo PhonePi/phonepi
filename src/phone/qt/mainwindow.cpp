@@ -12,10 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
     textLayout = new QGridLayout();
 
     Button btn;
-    QPushButton *backButton = btn.createButtonIco("pics//back.png", QSize(170, 70));
+    QPushButton *backButton = btn.createButtonIco(workingDir + "pics//back.png", QSize(170, 70));
     connect(backButton, SIGNAL(clicked()), this, SLOT(back()));
 
-    QPushButton *erase = btn.createButtonIco("pics//erase.png", QSize(70, 70));
+    QPushButton *erase = btn.createButtonIco(workingDir + "pics//erase.png", QSize(70, 70));
     connect(erase, SIGNAL(clicked()), this, SLOT(erase()));
 
     phoneNumber = new QLabel();
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     commonLayout = new QGridLayout();
     commonLayout->addLayout(textLayout, 0, 0, Qt::AlignCenter);
-    commonLayout->addLayout(buttonLayout, 0, 1, Qt::AlignCenter);
+    commonLayout->addLayout(buttonLayout, 1, 0, Qt::AlignCenter);
 }
 
 MainWindow::~MainWindow()
