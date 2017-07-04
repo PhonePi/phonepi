@@ -1,16 +1,33 @@
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QPushButton>
 #include "mainwindow.h"
-#include <QQmlComponent>
-#include <QQuickItem>
+#include "Button.h"
 
-MainWindow::MainWindow(QObject *parent)
-    : QQmlApplicationEngine(parent)
+MainWindow::MainWindow(QWidget *parent)
+        : QWidget(parent)
 {
-	load(QUrl("qrc:///qml/main.qml"));
-	rootContext()->setContextProperty("window", this);
-	if(!bus.isConnected())
-		exit(1);
 
-    GetModem();
+    textField = new QWidget();
+    textLayout = new QGridLayout();
+
+    Button btn;
+    QPushButton *backButton = btn.createButtonIco("pics//back.png", QSize(170, 70));
+    connect(backButton, SIGNAL(clicked()), this, SLOT(back()));
+
+    QPushButton *erase = btn.createButtonIco("pics//erase.png", QSize(70, 70));
+    connect(erase, SIGNAL(clicked()), this, SLOT(erase()));
+
+    phoneNumber = new QLabel();
+    QFont textFont = phoneNumber->font();
+    textFont.setPointSize(30);
+    textFont.setBold(true);
+    phoneNumber->setFont(textFont);
+
+    textLayout->addWidget(backButton, 0, 0, Qt::AlignRight);
+    textLayout->addWidget(phoneNumber, 0, 1, Qt::AlignCenter);
+    textLayout->addWidget(erase, 0, 2, Qt::AlignLeft);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -18,75 +35,33 @@ MainWindow::~MainWindow()
 
 }
 
-std::vector<Answer_struct> getStructAnswer(const QDBusArgument &dbusArgs) {
-    QString selected_modem;
-    Answer_struct answer_struct;
-    std::vector<Answer_struct> answers;
-    dbusArgs.beginArray();
-    while (!dbusArgs.atEnd()) {
-        dbusArgs.beginStructure();
-        if (dbusArgs.currentType() == 0)
-            dbusArgs >> answer_struct.name;
-        if (dbusArgs.currentType() == 4)
-            dbusArgs >> answer_struct.porp_map;
-        dbusArgs.endStructure();
-        answers.push_back(answer_struct);
-    }
-    dbusArgs.endArray();
-
-    return answers;
-}
-
-void MainWindow::isAnswerValid(QDBusMessage msg)
-{
-    if(QDBusMessage::ErrorMessage == msg.type()){
-        qDebug() << msg.errorMessage();
-        exit(1);
-    }
-}
-
-void MainWindow::GetModem(){
-    QDBusConnection bus = QDBusConnection::systemBus();
-
-    if(!bus.isConnected())
-        exit(1);
-
-    QDBusInterface dbus_iface("org.ofono", "/", "org.ofono.Manager", bus);
-    QDBusMessage modem = dbus_iface.call("GetModems");
-
-    isAnswerValid(modem);
-
-    const QDBusArgument &dbusArgs = modem.arguments().first().value<QDBusArgument>();
-    std::vector<Answer_struct> answers = getStructAnswer(dbusArgs);
-
-    if(answers.size() == 0)
-        exit(1);
-
-    if(answers.size() == 1)
-        selected_modem = answers[0].name;
-    else
-        for(Answer_struct modem : answers)
-            if(modem.name.contains("sim900"))
-                selected_modem = modem.name;
-
-    if(selected_modem.isNull() || selected_modem.isEmpty())
-        exit(1);
-}
-
 void MainWindow::dialNumber(QString call_number)
 {
 	if(call_number.isEmpty() || call_number.isNull())
 		return;
 
-    load(QUrl("qrc:///qml/dialing.qml"));
+    //load(QUrl("qrc:///qml/dialing.qml"));
 
-    QList<QObject*> objectList = this->rootObjects();
-    QObject* object =  objectList[1]->findChild<QObject*>("call_number");
-    if(object)
-        object->setProperty("text", call_number);
+    //QList<QObject*> objectList = this->rootObjects();
+    //QObject* object =  objectList[1]->findChild<QObject*>("call_number");
+    //if(object)
+    //    object->setProperty("text", call_number);
 
-    qDebug() << call_number;
-    QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
-    dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(call_number)), QVariant::fromValue(QString("")));
+    //qDebug() << call_number;
+    //QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
+    //dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(call_number)), QVariant::fromValue(QString("")));
 
+}
+
+void MainWindow::back(){
+    exit(1);
+}
+
+void MainWindow::erase(){
+    if(phoneNumber->text().isEmpty())
+        return;
+
+    int size = phoneNumber->text().size() - 1;
+    std::string newText = phoneNumber->text().toStdString().substr(0, size);
+    phoneNumber->setText(newText.c_str());
 }

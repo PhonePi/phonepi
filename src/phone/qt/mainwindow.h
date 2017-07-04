@@ -3,10 +3,11 @@
 
 #include <QtCore/QUrl>
 #include <QtQml/QQmlApplicationEngine>
-#include <QQmlContext>
 #include <QApplication>
 #include <QString>
-#include <QtDBus>
+#include <QObject>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
 
 struct Answer_struct{
     QString name;
@@ -14,18 +15,28 @@ struct Answer_struct{
 };
 Q_DECLARE_METATYPE(Answer_struct)
 
-class MainWindow : public QQmlApplicationEngine{
+class MainWindow : public QWidget{
     Q_OBJECT
 public:
-    MainWindow(QObject *parent = 0);
+    MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void GetModem();
-    void isAnswerValid(QDBusMessage msg);
-    Q_INVOKABLE void dialNumber(QString number);
+    QWidget *mainWindow;
+    QWidget *textField;
+    QWidget *buttonField;
+    QGridLayout *textLayout;
+    QGridLayout *buttonLayout;
+    QVBoxLayout *commonLayout;
+
+    void dialNumber(QString number);
+
+public slots:
+    void back();
+    void erase();
 
 private:
-    QDBusConnection bus = QDBusConnection::systemBus();
+    //QDBusConnection bus = QDBusConnection::systemBus();
     QString selected_modem;
 	QString dialedNumber;
+    QLabel *phoneNumber;
 };
 #endif // MAINWINDOW_H
