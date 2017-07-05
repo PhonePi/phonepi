@@ -1,14 +1,17 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QScreen>
+#include <QDebug>
 #include <iostream>
+#include <sys/stat.h>
 #include "mainwindow.h"
 #include "Button.h"
 
 MainWindow::MainWindow(QWidget *parent)
         : QWidget(parent)
 {
-
+    getSimPath();
+    qDebug() << "Using modem: " << selected_modem;
     QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->geometry();
     width = screenGeometry.width();
@@ -49,10 +52,6 @@ MainWindow::MainWindow(QWidget *parent)
     Button *btn = new Button();
     btn->setLabel(phoneNumber);
     buttonLayout = btn->createButtonGrid(buttonField);
-
-    int cols = buttonLayout->columnCount();
-    int rows = buttonLayout->rowCount();
-    //buttonLayout->addWidget(dial, rows, cols/2, Qt::AlignCenter);
 
     buttonField->setLayout(buttonLayout);
 
@@ -114,6 +113,21 @@ void MainWindow::erase(){
     phoneNumber->setText(newText.c_str());
 }
 
-int MainWindow::numberClicked(){
-    std::cout<<"Number clicked";
+void MainWindow::getSimPath(){
+    struct stat buf;
+    if(stat("//home//arseny//.modem", &buf) != 0){
+        qDebug() << "Cannot find file ~/.modem";
+        qDebug() << "For correct work of dialer app sim-module is required";
+        exit(1);
+    }
+
+    FILE *fp;
+    char buffer[20];
+    fp = popen("cat ~//.modem", "r");
+    if (fp != NULL)
+    {
+        while (fgets(buffer, sizeof(buffer), fp) != NULL)
+        pclose(fp);
+    }
+    selected_modem = buffer;
 }
