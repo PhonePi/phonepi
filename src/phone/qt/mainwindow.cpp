@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <iostream>
 #include <sys/stat.h>
+#include <QtDBus/QDBusInterface>
 #include "mainwindow.h"
 #include "Button.h"
 
@@ -87,16 +88,15 @@ void MainWindow::dialNumber()
 	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
 
-    //load(QUrl("qrc:///qml/dialing.qml"));
+    QDBusConnection bus = QDBusConnection::systemBus();
+    if(!bus.isConnected()){
+        qDebug() << "Connection is not established";
+        exit(1);
+    }
 
-    //QList<QObject*> objectList = this->rootObjects();
-    //QObject* object =  objectList[1]->findChild<QObject*>("call_number");
-    //if(object)
-    //    object->setProperty("text", call_number);
-
-    //qDebug() << call_number;
-    //QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
-    //dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(call_number)), QVariant::fromValue(QString("")));
+    qDebug() << dialedNumber;
+    QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
+    dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(dialedNumber)), QVariant::fromValue(QString("")));
 
 }
 
@@ -130,4 +130,5 @@ void MainWindow::getSimPath(){
         pclose(fp);
     }
     selected_modem = buffer;
+    selected_modem = selected_modem.toStdString().substr(0, selected_modem.toStdString().size()-1).c_str();
 }

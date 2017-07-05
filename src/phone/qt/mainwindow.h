@@ -28,7 +28,6 @@ public slots:
     void dialNumber();
 
 private:
-    //QDBusConnection bus = QDBusConnection::systemBus();
     QString selected_modem;
 	QString dialedNumber;
     QLabel *phoneNumber;
