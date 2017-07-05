@@ -12,17 +12,18 @@ Button::Button(QString text, QWidget *parent)
     setText(text);
 }
 
-QGridLayout* Button::createButtonGrid(){
+QGridLayout* Button::createButtonGrid(QWidget* wiget){
     QGridLayout *layout = new QGridLayout();
-    layout->setVerticalSpacing(2);
-    layout->setHorizontalSpacing(2);
+    layout->setSpacing(2);
+    int buttonWidth = wiget->width() / 3 - 2 * layout->spacing() / 3;
+    int buttonHeight = wiget->height() / 4 - 3 * layout->spacing() / 4;
 
-    std::string fontcolor = "QLabel { color : black; }";
+
+    std::string fontcolor = "QLabel { color: black; }";
     int k = 0;
     for(int i = 0; i < 4; i++) {
         for (int j = 0; j < 3; j++) {
             Button *btn = new Button(numbers[k].c_str());
-            //setText(numbers[k].c_str());
             k++;
             btn->setStyleSheet(QString(fontcolor.c_str()));
             QFont font = btn->font();
@@ -33,12 +34,10 @@ QGridLayout* Button::createButtonGrid(){
 
             btn->setAutoFillBackground(true);
             QPalette pal(palette());
-            pal.setColor(QPalette::Background, Qt::white);
+            pal.setColor(QPalette::Background, "#fbf1c7");
             btn->setPalette(pal);
 
-            //button->setStyleSheet("QPushButton {background-color:transparent;}");
-
-            btn->setFixedSize(70, 70);
+            btn->setFixedSize(buttonWidth, buttonHeight);
             connect(btn, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
             layout->addWidget(btn, i, j, Qt::AlignCenter);
@@ -49,7 +48,6 @@ QGridLayout* Button::createButtonGrid(){
 }
 
 void Button::createButtonIco(std::string iconPath, QSize size){
-    //QLabel *button = new QLabel();
     setScaledContents(true);
     QPixmap backPict(iconPath.c_str());
     QIcon backIcon(backPict);
