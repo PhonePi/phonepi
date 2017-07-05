@@ -29,17 +29,15 @@ public slots:
 
 private:
     QString selected_modem;
-	QString dialedNumber;
     QLabel *phoneNumber;
     std::string workingDir = "//home//arseny//Repos//KSPT//Phone//src//phone//qt//";
-    QGridLayout *textLayout;
-    QGridLayout *buttonLayout;
     QGridLayout *commonLayout;
     QWidget *mainWindow;
-    QWidget *textField;
-    QWidget *buttonField;
     void getSimPath();
     int height;
     int width;
+    void getScreenSize();
+    void createCommonLayout();
+
 };
 #endif // MAINWINDOW_H
