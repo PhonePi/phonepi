@@ -4,6 +4,7 @@
 #include <iostream>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLabel>
+#include <QScreen>
 
 #include "Config.h"
 #include "AppRunner.h"
@@ -86,8 +87,10 @@ int main(int argc, char *argv[]) {
     // set layout
     widget.setLayout(layout);
     // run
-    widget.showMaximized();
+	QRect geometry = QGuiApplication::primaryScreen()->geometry();
+    widget.setFixedSize(geometry.width(), geometry.height());
     widget.activateWindow();
+	widget.show();
 
     return a.exec();
 }

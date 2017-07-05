@@ -4,6 +4,7 @@
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QSpinBox>
+#include <QScreen>
 
 #include <iostream>
 #include <QtWidgets/QPushButton>
@@ -70,8 +71,10 @@ int main(int argc, char** argv) {
 
     // start application
     widget.setLayout(layout);
-    widget.showMaximized();
+    QRect geometry = QGuiApplication::primaryScreen()->geometry();
+    widget.setFixedSize(geometry.width(), geometry.height());
     widget.activateWindow();
+	widget.show();
 
     // start up brightness thread
     startUpBrightnessThread();
