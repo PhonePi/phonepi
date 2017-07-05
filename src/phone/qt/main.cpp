@@ -2,17 +2,10 @@
 #include <QDebug>
 #include "mainwindow.h"
 
-int main(int argc, char *argv[])
-{
-    if(argc < 2) {
-        qDebug() << "To start dialerApp you need to specify sim-module for call making\nFormat: \\sim900_0";
-        exit(1);
-    }
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    if(argc == 2) {
-        MainWindow w;
-        w.setSim(argv[1]);
-        w.showDialer();
-    }
+    MainWindow w;
+    w.showDialer();
+
     return a.exec();
 }
