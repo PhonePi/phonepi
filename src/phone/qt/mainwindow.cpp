@@ -31,12 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     phoneNumber = new QLabel();
     QFont textFont = phoneNumber->font();
-    textFont.setPointSize(30);
+    textFont.setPointSize(20);
     textFont.setBold(true);
     phoneNumber->setFont(textFont);
 
     textLayout->addWidget(back, 0, 0, Qt::AlignRight);
-    textLayout->addWidget(phoneNumber, 1, 1, Qt::AlignCenter);
     textLayout->addWidget(erase, 0, 2, Qt::AlignLeft);
 
 
@@ -48,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     buttonField->setFixedSize(width - width * 0.07 * 2, height/2);
 
     Button *btn = new Button();
+    btn->setLabel(phoneNumber);
     buttonLayout = btn->createButtonGrid(buttonField);
 
     int cols = buttonLayout->columnCount();
@@ -57,9 +57,11 @@ MainWindow::MainWindow(QWidget *parent)
     buttonField->setLayout(buttonLayout);
 
     commonLayout = new QGridLayout();
+    commonLayout->setSpacing(5);
     commonLayout->addLayout(textLayout, 0, 0, Qt::AlignCenter);
-    commonLayout->addWidget(buttonField, 1, 0, Qt::AlignCenter);
-    commonLayout->addWidget(dial, 2,0, Qt::AlignCenter);
+    commonLayout->addWidget(phoneNumber, 1, 0, Qt::AlignCenter);
+    commonLayout->addWidget(buttonField, 2, 0, Qt::AlignCenter);
+    commonLayout->addWidget(dial, 3,0, Qt::AlignCenter);
 }
 
 MainWindow::~MainWindow()
