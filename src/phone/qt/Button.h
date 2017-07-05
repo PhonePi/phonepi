@@ -1,7 +1,3 @@
-//
-// Created by arseny on 7/4/17.
-//
-
 #ifndef DIALER_PI_BUTTON_H
 #define DIALER_PI_BUTTON_H
 
@@ -15,6 +11,7 @@ class Button : public QLabel{
     Q_OBJECT
 public:
     Button(QWidget * parent = 0);
+    ~Button();
     void createButtonIco(std::string, QSize);
     QGridLayout* createButtonGrid(QWidget*);
     void setLabel(QLabel*);

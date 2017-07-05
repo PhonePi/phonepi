@@ -1,15 +1,14 @@
-//
-// Created by arseny on 7/4/17.
-//
-
 #include <QTextEdit>
 #include <iostream>
+#include <QDebug>
 #include "Button.h"
 
 Button::Button(QWidget *parent)
         : QLabel(parent)
 {
 }
+
+Button::~Button() {}
 
 void Button::setLabel(QLabel* label){
     numberLabel = label;
@@ -66,6 +65,7 @@ void Button::mouseDoubleClickEvent(QMouseEvent *event){
 }
 
 void Button::mousePressEvent(QMouseEvent *event){
+    qDebug() << "clicked";
     emit clicked();
 }
 
