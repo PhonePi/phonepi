@@ -13,9 +13,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Widgets finds its own dependencies.
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5DBus REQUIRED)
 find_package(Qt REQUIRED)
 
 add_executable(dialer-pi ${SOURCE_FILES})
 qt5_use_modules(dialer-pi  Widgets)
+qt5_use_modules(dialer-pi  DBus)
 
-install(TARGETS dialer-pi EXPORT settings-pi DESTINATION bin)
+install(TARGETS dialer-pi EXPORT dialer-pi DESTINATION bin)
