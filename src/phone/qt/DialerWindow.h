@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef DIALER_PI_WINDOW_H
+#define DIALER_PI_WINDOW_H
 
 #include <QtCore/QUrl>
 #include <QtQml/QQmlApplicationEngine>
@@ -29,10 +29,9 @@ private:
     QGridLayout *commonLayout;
     QWidget *mainWindow;
     void getSimPath();
-    int height;
-    int width;
+    QSize screenSize;
     void getScreenSize();
     void createCommonLayout();
 
 };
-#endif // MAINWINDOW_H
+#endif // DIALER_PI_WINDOW_H

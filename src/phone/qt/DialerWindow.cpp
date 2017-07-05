@@ -27,7 +27,7 @@ void DialerWindow::showDialer(){
     QPalette pal(palette());
     pal.setColor(QPalette::Background, "#fbf1c7");
     mainWindow ->setPalette(pal);
-    mainWindow->setFixedSize(width, height);
+    mainWindow->setFixedSize(screenSize.width(), screenSize.height());
     mainWindow->activateWindow();
     mainWindow->setLayout(commonLayout);
     mainWindow->show();
@@ -35,6 +35,7 @@ void DialerWindow::showDialer(){
 
 void DialerWindow::dialNumber()
 {
+    qDebug() << "dialNumber slot";
     QString dialedNumber = phoneNumber->text();
 	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
@@ -92,8 +93,8 @@ void DialerWindow::getSimPath(){
 void DialerWindow::getScreenSize() {
     QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenGeometry = screen->geometry();
-    width = screenGeometry.width();
-    height = screenGeometry.height();
+    screenSize.setWidth(screenGeometry.width());
+    screenSize.setHeight(screenGeometry.height());
 }
 
 void DialerWindow::createCommonLayout(){
@@ -125,7 +126,7 @@ void DialerWindow::createCommonLayout(){
     QPalette pal(palette());
     pal.setColor(QPalette::Background, Qt::black);
     buttonField->setPalette(pal);
-    buttonField->setFixedSize(width - width * 0.07 * 2, height/2);
+    buttonField->setFixedSize(screenSize.width() - screenSize.width() * 0.07 * 2, screenSize.height() / 2);
 
     Button *btn = new Button();
     btn->setLabel(phoneNumber);
@@ -139,5 +140,4 @@ void DialerWindow::createCommonLayout(){
     commonLayout->addWidget(phoneNumber, 1, 0, Qt::AlignCenter);
     commonLayout->addWidget(buttonField, 2, 0, Qt::AlignCenter);
     commonLayout->addWidget(dial, 3,0, Qt::AlignCenter);
-
 }
