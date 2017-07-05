@@ -3,7 +3,8 @@ project(dialer-pi)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp mainwindow.h mainwindow.cpp Button.cpp Button.h)
+set(SOURCE_FILES main.cpp DialerWindow.h DialerWindow.cpp
+        Button.cpp Button.h CallWindow.cpp CallWindow.h)
 
 # Tell CMake to run moc when necessary:
 set(CMAKE_AUTOMOC ON)
