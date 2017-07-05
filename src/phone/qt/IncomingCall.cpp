@@ -18,8 +18,9 @@ IncomingCall::IncomingCall(QString phoneNumber, QWidget *parent)
     createCommonLayout();
 }
 
-IncomingCall::~IncomingCall()
-{}
+IncomingCall::~IncomingCall() {
+    qDebug() << "Incoming destructor";
+}
 
 void IncomingCall::showIncoming() {
     incomingWindow = new QWidget();
@@ -33,16 +34,20 @@ void IncomingCall::showIncoming() {
 
 void IncomingCall::hang(){
     qDebug() << "hang slot";
-    DialerWindow dialerWindow;
-    dialerWindow.showDialer();
+    DialerWindow *dialerWindow = new DialerWindow();
+    dialerWindow->showDialer();
     incomingWindow->close();
+    delete(incomingWindow);
+    delete(this);
 }
 
 void IncomingCall::answer(){
     qDebug() << "answer slot";
-    CallWindow callWindow(phoneNumber);
-    callWindow.showWindow();
+    CallWindow *callWindow = new CallWindow(phoneNumber);
+    callWindow->showWindow();
     incomingWindow->close();
+    delete(incomingWindow);
+    delete(this);
 }
 
 void IncomingCall::getScreenSize() {
@@ -68,21 +73,23 @@ void IncomingCall::createCommonLayout() {
     phoneNumber->setText(this->phoneNumber);
 
     QGridLayout *gridLayout = new QGridLayout();
-    gridLayout->setContentsMargins(screenSize.width()/10, screenSize.height()/10, screenSize.width()/10, screenSize.width()/10);
+    gridLayout->setContentsMargins(screenSize.width()/10, screenSize.height()/10,
+                                   screenSize.width()/10, screenSize.width()/10);
     gridLayout->addWidget(incoming, 0, 0, Qt::AlignLeft);
     gridLayout->addWidget(phoneNumber, 1, 0, Qt::AlignLeft);
 
     Button *dial = new Button();
-    dial->createButtonIco(get_icoPath("answer.png"), QSize(70, 110));
+    dial->createButtonIco(get_icoPath("answer.png"), QSize(90, 120));
     connect(dial, SIGNAL(clicked()), this, SLOT(answer()));
 
     Button *hang = new Button();
-    hang->createButtonIco(get_icoPath("hang.png"), QSize(150, 70));
+    hang->createButtonIco(get_icoPath("hang.png"), QSize(150, 60));
     connect(hang, SIGNAL(clicked()), this, SLOT(hang()));
 
     commonLayout = new QGridLayout();
     commonLayout->setSpacing(5);
-    commonLayout->setContentsMargins(screenSize.width()/10, screenSize.height()/10, screenSize.width()/10, screenSize.width()/10);
+    commonLayout->setContentsMargins(screenSize.width()/10, screenSize.height()/10,
+                                     screenSize.width()/10, screenSize.width()/10);
     commonLayout->addLayout(gridLayout, 1, 1, Qt::AlignCenter | Qt::AlignTop);
     commonLayout->addWidget(dial, 2, 0, Qt::AlignRight | Qt::AlignBottom);
     commonLayout->addWidget(hang, 2, 2, Qt::AlignLeft | Qt::AlignBottom);

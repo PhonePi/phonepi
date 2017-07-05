@@ -19,8 +19,10 @@ DialerWindow::DialerWindow(QWidget *parent)
     createCommonLayout();
 }
 
-DialerWindow::~DialerWindow()
-{}
+DialerWindow::~DialerWindow(){
+    qDebug() << "DialerWindow destructor";
+
+}
 
 void DialerWindow::showDialer(){
     mainWindow = new QWidget();
@@ -39,10 +41,12 @@ void DialerWindow::dialNumber()
 	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
 
-    CallWindow callWindow(dialedNumber);
-    callWindow.showWindow();
+    CallWindow *callWindow = new CallWindow(dialedNumber);
+    callWindow->showWindow();
     mainWindow->close();
-
+    delete(mainWindow);
+    delete(this);
+    //mainWindow->close();
 
     /*QDBusConnection bus = QDBusConnection::systemBus();
     if(!bus.isConnected()){
@@ -53,7 +57,6 @@ void DialerWindow::dialNumber()
     qDebug() << dialedNumber;
     QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
     dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(dialedNumber)), QVariant::fromValue(QString("")));*/
-
 }
 
 void DialerWindow::back(){
@@ -72,23 +75,23 @@ void DialerWindow::erase(){
 void DialerWindow::getSimPath(){
     struct stat buf;
 
-
-    if(stat(get_fullpath("~//.modem").c_str(), &buf) != 0){
-        qDebug() << "Cannot find file ~/.modem";
+    if(stat(get_fullpath("/usr/share/phonepi/info").c_str(), &buf) != 0){
+        qDebug() << "Cannot find file /usr/share/pnonepi/info";
         qDebug() << "For correct work of dialer app sim-module is required";
         exit(1);
     }
 
     FILE *fp;
     char buffer[20];
-    fp = popen("cat ~//.modem", "r");
+    fp = popen("cat /usr/share/phonepi/info | grep Modem | awk '{ print $2 }'", "r");
     if (fp != NULL)
     {
         while (fgets(buffer, sizeof(buffer), fp) != NULL)
         pclose(fp);
     }
     selected_modem = buffer;
-    selected_modem = selected_modem.toStdString().substr(0, selected_modem.toStdString().size()-1).c_str();
+    selected_modem = selected_modem.toStdString()
+            .substr(0, selected_modem.toStdString().size() -1).c_str();
 }
 
 void DialerWindow::createCommonLayout(){
@@ -112,15 +115,16 @@ void DialerWindow::createCommonLayout(){
     textFont.setBold(true);
     phoneNumber->setFont(textFont);
 
-    textLayout->addWidget(back, 0, 0, Qt::AlignRight);
-    textLayout->addWidget(erase, 0, 2, Qt::AlignLeft);
+    textLayout->addWidget(back, 0, 0, Qt::AlignLeft);
+    textLayout->addWidget(erase, 0, 1, Qt::AlignRight);
 
     QWidget* buttonField = new QWidget();
     buttonField->setAutoFillBackground(true);
     QPalette pal(palette());
     pal.setColor(QPalette::Background, Qt::black);
     buttonField->setPalette(pal);
-    buttonField->setFixedSize(screenSize.width() - screenSize.width() * 0.07 * 2, screenSize.height() / 2);
+    buttonField->setFixedSize(screenSize.width() - screenSize.width() * 0.07 * 2,
+                              screenSize.height() / 2);
 
     Button *btn = new Button();
     btn->setLabel(phoneNumber);

@@ -20,7 +20,9 @@ CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
     timer->start(1000);
 }
 
-CallWindow::~CallWindow() {}
+CallWindow::~CallWindow() {
+    qDebug() << "Call window destructor";
+}
 
 void CallWindow::getScreenSize() {
     QScreen *screen = QGuiApplication::primaryScreen();
@@ -95,7 +97,8 @@ void CallWindow::updateTimerLabel() {
 
 void CallWindow::hang() {
     qDebug() << "hang slot";
-    DialerWindow dialerWindow;
-    dialerWindow.showDialer();
+    DialerWindow *dialerWindow = new DialerWindow();
+    dialerWindow->showDialer();
     callWindow->close();
+    delete(callWindow);
 }

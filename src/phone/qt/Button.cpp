@@ -8,7 +8,9 @@ Button::Button(QWidget *parent)
 {
 }
 
-Button::~Button() {}
+Button::~Button() {
+    qDebug() << "Button destructor";
+}
 
 void Button::setLabel(QLabel* label){
     numberLabel = label;

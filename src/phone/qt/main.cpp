@@ -6,11 +6,11 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     if(argc < 2) {
-        DialerWindow w;
-        w.showDialer();
+        DialerWindow *w = new DialerWindow();
+        w->showDialer();
     }else{
-        IncomingCall incoming(argv[1]);
-        incoming.showIncoming();
+        IncomingCall *incoming = new IncomingCall(argv[1]);
+        incoming->showIncoming();
     }
 
     return a.exec();
