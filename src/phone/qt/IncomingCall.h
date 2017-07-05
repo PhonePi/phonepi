@@ -24,7 +24,6 @@ public slots:
 private:
     QString phoneNumber;
     QSize screenSize;
-    std::string workingDir = "//home//arseny//Repos//KSPT//Phone//src//phone//qt//";
     QGridLayout *commonLayout;
     QWidget *incomingWindow;
     void getScreenSize();

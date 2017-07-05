@@ -25,12 +25,10 @@ public slots:
 private:
     QString selected_modem;
     QLabel *phoneNumber;
-    std::string workingDir = "//home//arseny//Repos//KSPT//Phone//src//phone//qt//";
     QGridLayout *commonLayout;
     QWidget *mainWindow;
     void getSimPath();
     QSize screenSize;
-    void getScreenSize();
     void createCommonLayout();
 
 };

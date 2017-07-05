@@ -7,6 +7,7 @@
 #include "Button.h"
 #include "CallWindow.h"
 #include "IncomingCall.h"
+#include "Additional.h"
 
 IncomingCall::IncomingCall(QString phoneNumber, QWidget *parent)
         : QWidget(parent)
@@ -23,9 +24,7 @@ IncomingCall::~IncomingCall()
 void IncomingCall::showIncoming() {
     incomingWindow = new QWidget();
     incomingWindow ->setAutoFillBackground(true);
-    QPalette pal(palette());
-    pal.setColor(QPalette::Background, "#fbf1c7");
-    incomingWindow ->setPalette(pal);
+    incomingWindow ->setPalette(getCommonPalette(this));
     incomingWindow->setFixedSize(screenSize.width(), screenSize.height());
     incomingWindow->activateWindow();
     incomingWindow->setLayout(commonLayout);
@@ -74,11 +73,11 @@ void IncomingCall::createCommonLayout() {
     gridLayout->addWidget(phoneNumber, 1, 0, Qt::AlignLeft);
 
     Button *dial = new Button();
-    dial->createButtonIco(workingDir + "pics//dial.png", QSize(70, 70));
+    dial->createButtonIco(get_icoPath("answer.png"), QSize(70, 110));
     connect(dial, SIGNAL(clicked()), this, SLOT(answer()));
 
     Button *hang = new Button();
-    hang->createButtonIco(workingDir + "pics//hang.png", QSize(120, 50));
+    hang->createButtonIco(get_icoPath("hang.png"), QSize(150, 70));
     connect(hang, SIGNAL(clicked()), this, SLOT(hang()));
 
     commonLayout = new QGridLayout();

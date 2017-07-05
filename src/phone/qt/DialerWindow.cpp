@@ -8,13 +8,14 @@
 #include "DialerWindow.h"
 #include "Button.h"
 #include "CallWindow.h"
+#include "Additional.h"
 
 DialerWindow::DialerWindow(QWidget *parent)
         : QWidget(parent)
 {
     getSimPath();
     qDebug() << "Using modem: " << selected_modem;
-    getScreenSize();
+    screenSize = getScreenSize();
     createCommonLayout();
 }
 
@@ -24,9 +25,7 @@ DialerWindow::~DialerWindow()
 void DialerWindow::showDialer(){
     mainWindow = new QWidget();
     mainWindow ->setAutoFillBackground(true);
-    QPalette pal(palette());
-    pal.setColor(QPalette::Background, "#fbf1c7");
-    mainWindow ->setPalette(pal);
+    mainWindow ->setPalette(getCommonPalette(this));
     mainWindow->setFixedSize(screenSize.width(), screenSize.height());
     mainWindow->activateWindow();
     mainWindow->setLayout(commonLayout);
@@ -72,7 +71,9 @@ void DialerWindow::erase(){
 
 void DialerWindow::getSimPath(){
     struct stat buf;
-    if(stat("//home//arseny//.modem", &buf) != 0){
+
+
+    if(stat(get_fullpath("~//.modem").c_str(), &buf) != 0){
         qDebug() << "Cannot find file ~/.modem";
         qDebug() << "For correct work of dialer app sim-module is required";
         exit(1);
@@ -90,26 +91,19 @@ void DialerWindow::getSimPath(){
     selected_modem = selected_modem.toStdString().substr(0, selected_modem.toStdString().size()-1).c_str();
 }
 
-void DialerWindow::getScreenSize() {
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    screenSize.setWidth(screenGeometry.width());
-    screenSize.setHeight(screenGeometry.height());
-}
-
 void DialerWindow::createCommonLayout(){
     QGridLayout* textLayout = new QGridLayout();
 
     Button *back = new Button();
-    back -> createButtonIco(workingDir + "pics//back.png", QSize(170, 70));
+    back -> createButtonIco(get_icoPath("back.png"), QSize(170, 70));
     connect(back, SIGNAL(clicked()), this, SLOT(back()));
 
     Button *erase = new Button();
-    erase->createButtonIco(workingDir + "pics//erase.png", QSize(70, 70));
+    erase->createButtonIco(get_icoPath("erase.png"), QSize(70, 70));
     connect(erase, SIGNAL(clicked()), this, SLOT(erase()));
 
     Button *dial = new Button();
-    dial->createButtonIco(workingDir + "pics//dial.png", QSize(70, 70));
+    dial->createButtonIco(get_icoPath("dial.png"), QSize(70, 70));
     connect(dial, SIGNAL(clicked()), this, SLOT(dialNumber()));
 
     phoneNumber = new QLabel();
