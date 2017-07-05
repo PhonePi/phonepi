@@ -1,6 +1,7 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QScreen>
+#include <iostream>
 #include "mainwindow.h"
 #include "Button.h"
 
@@ -8,17 +9,24 @@ MainWindow::MainWindow(QWidget *parent)
         : QWidget(parent)
 {
 
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    width = screenGeometry.width();
+    height = screenGeometry.height();
+
     textField = new QWidget();
     textLayout = new QGridLayout();
 
-    Button btn;
-    QPushButton *backButton = btn.createButtonIco(workingDir + "pics//back.png", QSize(170, 70));
-    connect(backButton, SIGNAL(clicked()), this, SLOT(back()));
+    Button *back = new Button();
+    back -> createButtonIco(workingDir + "pics//back.png", QSize(170, 70));
+    connect(back, SIGNAL(clicked()), this, SLOT(back()));
 
-    QPushButton *erase = btn.createButtonIco(workingDir + "pics//erase.png", QSize(70, 70));
+    Button *erase = new Button();
+    erase->createButtonIco(workingDir + "pics//erase.png", QSize(70, 70));
     connect(erase, SIGNAL(clicked()), this, SLOT(erase()));
 
-    QPushButton *dial = btn.createButtonIco(workingDir + "pics//dial.png", QSize(70, 70));
+    Button *dial = new Button();
+    dial->createButtonIco(workingDir + "pics//dial.png", QSize(70, 70));
     connect(dial, SIGNAL(clicked()), this, SLOT(dialNumber()));
 
     phoneNumber = new QLabel();
@@ -27,19 +35,31 @@ MainWindow::MainWindow(QWidget *parent)
     textFont.setBold(true);
     phoneNumber->setFont(textFont);
 
-    textLayout->addWidget(backButton, 0, 0, Qt::AlignRight);
-    textLayout->addWidget(phoneNumber, 0, 1, Qt::AlignCenter);
+    textLayout->addWidget(back, 0, 0, Qt::AlignRight);
+    textLayout->addWidget(phoneNumber, 1, 1, Qt::AlignCenter);
     textLayout->addWidget(erase, 0, 2, Qt::AlignLeft);
 
-    buttonLayout = (QGridLayout*)btn.createButtonGrid();
+
+    buttonField = new QWidget();
+    buttonField->setAutoFillBackground(true);
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::black);
+    buttonField->setPalette(pal);
+    buttonField->setFixedSize(width - width * 0.07 * 2, height/2);
+
+    Button *btn = new Button();
+    buttonLayout = btn->createButtonGrid(buttonField);
+
     int cols = buttonLayout->columnCount();
     int rows = buttonLayout->rowCount();
-    buttonLayout->addWidget(dial, rows, cols/2, Qt::AlignCenter);
+    //buttonLayout->addWidget(dial, rows, cols/2, Qt::AlignCenter);
 
+    buttonField->setLayout(buttonLayout);
 
     commonLayout = new QGridLayout();
     commonLayout->addLayout(textLayout, 0, 0, Qt::AlignCenter);
-    commonLayout->addLayout(buttonLayout, 1, 0, Qt::AlignCenter);
+    commonLayout->addWidget(buttonField, 1, 0, Qt::AlignCenter);
+    commonLayout->addWidget(dial, 2,0, Qt::AlignCenter);
 }
 
 MainWindow::~MainWindow()
@@ -47,11 +67,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::showDialer(){
     mainWindow = new QWidget();
+
+    mainWindow ->setAutoFillBackground(true);
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, "#fbf1c7");
+    mainWindow ->setPalette(pal);
+
     mainWindow->setLayout(commonLayout);
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    int width = screenGeometry.width();
-    int height = screenGeometry.height();
 
     mainWindow->setFixedSize(width, height);
     mainWindow->activateWindow();
@@ -88,4 +110,8 @@ void MainWindow::erase(){
     int size = phoneNumber->text().size() - 1;
     std::string newText = phoneNumber->text().toStdString().substr(0, size);
     phoneNumber->setText(newText.c_str());
+}
+
+int MainWindow::numberClicked(){
+    std::cout<<"Number clicked";
 }

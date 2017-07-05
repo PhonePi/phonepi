@@ -26,6 +26,7 @@ public slots:
     void back();
     void erase();
     void dialNumber();
+    int numberClicked();
 
 private:
     //QDBusConnection bus = QDBusConnection::systemBus();
@@ -39,5 +40,7 @@ private:
     QWidget *mainWindow;
     QWidget *textField;
     QWidget *buttonField;
+    int height;
+    int width;
 };
 #endif // MAINWINDOW_H
