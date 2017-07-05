@@ -12,6 +12,10 @@ Button::Button(QString text, QWidget *parent)
     setText(text);
 }
 
+void Button::setLabel(QLabel* label){
+    numberLabel = label;
+}
+
 QGridLayout* Button::createButtonGrid(QWidget* wiget){
     QGridLayout *layout = new QGridLayout();
     layout->setSpacing(2);
@@ -27,7 +31,7 @@ QGridLayout* Button::createButtonGrid(QWidget* wiget){
             k++;
             btn->setStyleSheet(QString(fontcolor.c_str()));
             QFont font = btn->font();
-            font.setPointSize(20);
+            font.setPointSize(30);
             font.setBold(true);
             btn->setAlignment(Qt::AlignCenter);
             btn->setFont(font);
@@ -39,6 +43,8 @@ QGridLayout* Button::createButtonGrid(QWidget* wiget){
 
             btn->setFixedSize(buttonWidth, buttonHeight);
             connect(btn, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+            if(btn->text() == "0")
+                connect(btn, SIGNAL(doubleClicked()), this, SLOT(doubleClick()));
 
             layout->addWidget(btn, i, j, Qt::AlignCenter);
         }
@@ -55,12 +61,23 @@ void Button::createButtonIco(std::string iconPath, QSize size){
     setFixedSize(size);
 }
 
+void Button::mouseDoubleClickEvent(QMouseEvent *event){
+    emit doubleClicked();
+}
+
 void Button::mousePressEvent(QMouseEvent *event){
-    std::cout << "clicked event \n";
     emit clicked();
 }
 
 void Button::buttonClicked() {
-    std::cout << "clicked SLOT \n";
-    //Get button caption that rised this signal
+    QLabel* button = (QLabel*)qobject_cast<QWidget*>(sender());
+    QString newText = numberLabel->text() + button->text();
+    numberLabel->setText(newText);
+}
+
+void Button::doubleClick(){
+
+    QString oldText = numberLabel->text().toStdString().substr(0, numberLabel->text().size() - 1).c_str();
+    QString newText = oldText + "+";
+    numberLabel->setText(newText);
 }

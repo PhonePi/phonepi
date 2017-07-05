@@ -17,17 +17,21 @@ public:
     Button(QString text = "", QWidget * parent = 0);
     void createButtonIco(std::string, QSize);
     QGridLayout* createButtonGrid(QWidget*);
+    void setLabel(QLabel*);
 
 public slots:
     void buttonClicked();
+    void doubleClick();
 
 signals:
     void clicked();
+    void doubleClicked();
 
 private:
     std::string numbers[12] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"};
     void mousePressEvent(QMouseEvent*);
-    QLabel numberLabel();
+    void mouseDoubleClickEvent(QMouseEvent*);
+    QLabel* numberLabel;
 
 };
 
