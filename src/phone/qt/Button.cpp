@@ -6,10 +6,9 @@
 #include <iostream>
 #include "Button.h"
 
-Button::Button(QString text, QWidget *parent)
+Button::Button(QWidget *parent)
         : QLabel(parent)
 {
-    setText(text);
 }
 
 void Button::setLabel(QLabel* label){
@@ -27,7 +26,8 @@ QGridLayout* Button::createButtonGrid(QWidget* wiget){
     int k = 0;
     for(int i = 0; i < 4; i++) {
         for (int j = 0; j < 3; j++) {
-            Button *btn = new Button(numbers[k].c_str());
+            Button *btn = new Button();
+            btn->setText(numbers[k].c_str());
             k++;
             btn->setStyleSheet(QString(fontcolor.c_str()));
             QFont font = btn->font();

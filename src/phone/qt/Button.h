@@ -14,7 +14,7 @@
 class Button : public QLabel{
     Q_OBJECT
 public:
-    Button(QString text = "", QWidget * parent = 0);
+    Button(QWidget * parent = 0);
     void createButtonIco(std::string, QSize);
     QGridLayout* createButtonGrid(QWidget*);
     void setLabel(QLabel*);
