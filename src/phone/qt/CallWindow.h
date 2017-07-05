@@ -1,12 +1,12 @@
-#ifndef DIALER_PI_CALL_H
-#define DIALER_PI_CALL_H
+#ifndef DIALER_PI_CALLWINDOW_H
+#define DIALER_PI_CALLWINDOW_H
 
 #include <QWidget>
 #include <QGridLayout>
 #include <QLabel>
 
 class CallWindow : public QWidget {
-Q_OBJECT
+    Q_OBJECT
 public:
     CallWindow(QString phoneNumber, QWidget *parent = 0);
     ~CallWindow();
@@ -29,4 +29,4 @@ private:
 };
 
 
-#endif //DIALER_PI_CALL_H
+#endif //DIALER_PI_CALLWINDOW_H

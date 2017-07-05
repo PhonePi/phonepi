@@ -1,11 +1,17 @@
-#include <iostream>
 #include <QDebug>
 #include "DialerWindow.h"
+#include "IncomingCall.h"
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    DialerWindow w;
-    w.showDialer();
+
+    if(argc < 2) {
+        DialerWindow w;
+        w.showDialer();
+    }else{
+        IncomingCall incoming(argv[1]);
+        incoming.showIncoming();
+    }
 
     return a.exec();
 }
