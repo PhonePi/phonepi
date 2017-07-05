@@ -2,17 +2,17 @@
 // Created by arseny on 7/4/17.
 //
 
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QLabel>
+#include <QTextEdit>
+#include <iostream>
 #include "Button.h"
 
-Button::Button(QWidget *parent)
-        : QPushButton(parent)
+Button::Button(QString text, QWidget *parent)
+        : QLabel(parent)
 {
+    setText(text);
 }
 
-QLayout* Button::createButtonGrid(){
+QGridLayout* Button::createButtonGrid(){
     QGridLayout *layout = new QGridLayout();
     layout->setVerticalSpacing(2);
     layout->setHorizontalSpacing(2);
@@ -21,36 +21,48 @@ QLayout* Button::createButtonGrid(){
     int k = 0;
     for(int i = 0; i < 4; i++) {
         for (int j = 0; j < 3; j++) {
-            QPushButton *button = new QPushButton(numbers[k].c_str());
+            Button *btn = new Button(numbers[k].c_str());
+            //setText(numbers[k].c_str());
             k++;
-            button->setStyleSheet(QString(fontcolor.c_str()));
-            QFont font = button->font();
+            btn->setStyleSheet(QString(fontcolor.c_str()));
+            QFont font = btn->font();
             font.setPointSize(20);
             font.setBold(true);
-            button->setFont(font);
+            btn->setAlignment(Qt::AlignCenter);
+            btn->setFont(font);
+
+            btn->setAutoFillBackground(true);
+            QPalette pal(palette());
+            pal.setColor(QPalette::Background, Qt::white);
+            btn->setPalette(pal);
+
             //button->setStyleSheet("QPushButton {background-color:transparent;}");
 
-            button->setFixedSize(70, 70);
-            connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+            btn->setFixedSize(70, 70);
+            connect(btn, SIGNAL(clicked()), this, SLOT(buttonClicked()));
 
-            layout->addWidget(button, i, j, Qt::AlignCenter);
+            layout->addWidget(btn, i, j, Qt::AlignCenter);
         }
     }
 
     return layout;
 }
 
-QPushButton* Button::createButtonIco(std::string iconPath, QSize size){
-    QPushButton *button = new QPushButton();
+void Button::createButtonIco(std::string iconPath, QSize size){
+    //QLabel *button = new QLabel();
+    setScaledContents(true);
     QPixmap backPict(iconPath.c_str());
     QIcon backIcon(backPict);
-    button->setIcon(backIcon);
-    button->setIconSize(size);
-    button->setFixedSize(size);
+    setPixmap(backPict);
+    setFixedSize(size);
+}
 
-    return button;
+void Button::mousePressEvent(QMouseEvent *event){
+    std::cout << "clicked event \n";
+    emit clicked();
 }
 
 void Button::buttonClicked() {
+    std::cout << "clicked SLOT \n";
     //Get button caption that rised this signal
 }
