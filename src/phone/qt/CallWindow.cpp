@@ -4,7 +4,6 @@
 #include "DialerWindow.h"
 #include "Additional.h"
 #include <QTimer>
-#include <QDebug>
 
 CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
         : QWidget(parent)
@@ -43,7 +42,7 @@ void CallWindow::createCommonLayout() {
     textFont.setPointSize(30);
     textFont.setBold(true);
     timerLabel->setFont(textFont);
-    timerLabel->setText("00:00");
+    timerLabel->setText("0:00");
 
     QGridLayout *callerLayout = new QGridLayout();
     callerLayout->setSpacing(5);
@@ -79,16 +78,17 @@ void CallWindow::updateTimerLabel() {
 
     if(secs > 59){
         min = secs / 60;
-        secs = secs - min*60;
+        secs = secs - min * 60;
     }
 
     if(secs < 10) {
-        std::string msg = min + ":0" + secs;
+        std::string msg = std::to_string(min) + ":0" + std::to_string(secs);
         timerLabel->setText(msg.c_str());
     }
-    else
-        timerLabel->setText(min + ":" + secs);
-
+    else {
+        std::string msg = std::to_string(min) + ":" + std::to_string(secs);
+        timerLabel->setText(msg.c_str());
+    }
 }
 
 void CallWindow::hang() {
