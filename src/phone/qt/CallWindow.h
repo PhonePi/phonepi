@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QLabel>
+#include <QTime>
 
 class CallWindow : public QWidget {
     Q_OBJECT
@@ -17,6 +18,7 @@ public slots:
     void hang();
 
 private:
+    QTime elapsedTime;
     QSize screenSize;
     int secs;
     int min;
@@ -25,7 +27,6 @@ private:
     QGridLayout *commonLayout;
     QLabel *timerLabel;
     void createCommonLayout();
-    void getScreenSize();
 };
 
 

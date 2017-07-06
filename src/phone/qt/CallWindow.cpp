@@ -4,6 +4,7 @@
 #include "DialerWindow.h"
 #include "Additional.h"
 #include <QTimer>
+#include <QDebug>
 
 CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
         : QWidget(parent)
@@ -11,7 +12,7 @@ CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
     this->phoneNumber = phoneNumber;
     secs = 0;
     min = 0;
-    getScreenSize();
+    screenSize = getScreenSize();
     createCommonLayout();
 
     QTimer *timer = new QTimer(this);
@@ -20,13 +21,6 @@ CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
 }
 
 CallWindow::~CallWindow() {
-}
-
-void CallWindow::getScreenSize() {
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    screenSize.setWidth(screenGeometry.width());
-    screenSize.setHeight(screenGeometry.height());
 }
 
 void CallWindow::createCommonLayout() {
@@ -77,19 +71,24 @@ void CallWindow::showWindow() {
     callWindow->activateWindow();
     callWindow->setLayout(commonLayout);
     callWindow->show();
+    elapsedTime.start();
 }
 
 void CallWindow::updateTimerLabel() {
-    secs++;
-    if(secs > 59) {
-        min++;
-        secs = 0;
+    secs = elapsedTime.elapsed() / 1000;
+
+    if(secs > 59){
+        min = secs / 60;
+        secs = secs - min*60;
     }
 
-    if(secs < 10)
-        timerLabel->setText(min + ":0" + secs);
+    if(secs < 10) {
+        std::string msg = min + ":0" + secs;
+        timerLabel->setText(msg.c_str());
+    }
     else
         timerLabel->setText(min + ":" + secs);
+
 }
 
 void CallWindow::hang() {
