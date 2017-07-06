@@ -30,6 +30,8 @@ void IncomingCall::showIncoming() {
 }
 
 void IncomingCall::hang(){
+    hangUp();
+
     DialerWindow *dialerWindow = new DialerWindow();
     dialerWindow->showDialer();
     incomingWindow->close();

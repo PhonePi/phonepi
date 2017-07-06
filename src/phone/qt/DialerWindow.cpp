@@ -4,7 +4,6 @@
 #include <QDebug>
 #include <iostream>
 #include <QtDBus/QDBusInterface>
-#include <sys/stat.h>
 #include "DialerWindow.h"
 #include "Button.h"
 #include "CallWindow.h"
@@ -38,22 +37,13 @@ void DialerWindow::dialNumber()
 	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
 
+    dialNumber(dialedNumber);
+
     CallWindow *callWindow = new CallWindow(dialedNumber);
     callWindow->showWindow();
     mainWindow->close();
     delete(mainWindow);
     delete(this);
-    //mainWindow->close();
-
-    /*QDBusConnection bus = QDBusConnection::systemBus();
-    if(!bus.isConnected()){
-        qDebug() << "Connection is not established";
-        exit(1);
-    }
-
-    qDebug() << dialedNumber;
-    QDBusInterface dbus_iface("org.ofono", selected_modem, "org.ofono.VoiceCallManager", bus);
-    dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(dialedNumber)), QVariant::fromValue(QString("")));*/
 }
 
 void DialerWindow::back(){
@@ -67,34 +57,6 @@ void DialerWindow::erase(){
     int size = phoneNumber->text().size() - 1;
     std::string newText = phoneNumber->text().toStdString().substr(0, size);
     phoneNumber->setText(newText.c_str());
-}
-
-void DialerWindow::getSimPath(){
-    struct stat buf;
-
-    if(stat(get_fullpath("/usr/share/phonepi/info").c_str(), &buf) != 0){
-        qDebug() << "Cannot find file /usr/share/pnonepi/info";
-        qDebug() << "For correct work of dialer app sim-module is required";
-        exit(1);
-    }
-
-    char buffer[20];
-    std::string result = "";
-    FILE* pipe = popen("cat /usr/share/phonepi/info | grep Modem | awk '{ print $2 }'", "r");
-    if (!pipe) throw std::runtime_error("popen() failed!");
-    try {
-        while (!feof(pipe)) {
-            if (fgets(buffer, 128, pipe) != NULL)
-                result += buffer;
-        }
-    } catch (...) {
-        pclose(pipe);
-        throw;
-    }
-    pclose(pipe);
-    selected_modem = result.c_str();
-    selected_modem = selected_modem.toStdString()
-            .substr(0, selected_modem.toStdString().size() -1).c_str();
 }
 
 void DialerWindow::createCommonLayout(){

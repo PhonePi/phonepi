@@ -23,11 +23,9 @@ public slots:
     void dialNumber();
 
 private:
-    QString selected_modem;
     QLabel *phoneNumber;
     QGridLayout *commonLayout;
     QWidget *mainWindow;
-    void getSimPath();
     QSize screenSize;
     void createCommonLayout();
 

@@ -92,6 +92,8 @@ void CallWindow::updateTimerLabel() {
 }
 
 void CallWindow::hang() {
+    hangUp();
+
     DialerWindow *dialerWindow = new DialerWindow();
     dialerWindow->showDialer();
     callWindow->close();
