@@ -3,8 +3,8 @@
 #include <QScreen>
 #include <QDebug>
 #include <iostream>
-#include <sys/stat.h>
 #include <QtDBus/QDBusInterface>
+#include <sys/stat.h>
 #include "DialerWindow.h"
 #include "Button.h"
 #include "CallWindow.h"
@@ -81,15 +81,21 @@ void DialerWindow::getSimPath(){
         exit(1);
     }
 
-    FILE *fp;
     char buffer[20];
-    fp = popen("cat /usr/share/phonepi/info | grep Modem | awk '{ print $2 }'", "r");
-    if (fp != NULL)
-    {
-        while (fgets(buffer, sizeof(buffer), fp) != NULL)
-        pclose(fp);
+    std::string result = "";
+    FILE* pipe = popen("cat /usr/share/phonepi/info | grep Modem | awk '{ print $2 }'", "r");
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    try {
+        while (!feof(pipe)) {
+            if (fgets(buffer, 128, pipe) != NULL)
+                result += buffer;
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
     }
-    selected_modem = buffer;
+    pclose(pipe);
+    selected_modem = result.c_str();
     selected_modem = selected_modem.toStdString()
             .substr(0, selected_modem.toStdString().size() -1).c_str();
 }
