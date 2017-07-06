@@ -101,4 +101,5 @@ void CallWindow::hang() {
     dialerWindow->showDialer();
     callWindow->close();
     delete(callWindow);
+    delete(this);
 }
