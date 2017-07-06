@@ -9,7 +9,6 @@ Button::Button(QWidget *parent)
 }
 
 Button::~Button() {
-    qDebug() << "Button destructor";
 }
 
 void Button::setLabel(QLabel* label){
@@ -67,7 +66,6 @@ void Button::mouseDoubleClickEvent(QMouseEvent *event){
 }
 
 void Button::mousePressEvent(QMouseEvent *event){
-    qDebug() << "clicked";
     emit clicked();
 }
 

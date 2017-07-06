@@ -1,7 +1,6 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QScreen>
-#include <QDebug>
 #include <QtDBus/QDBusInterface>
 #include "DialerWindow.h"
 #include "Button.h"
@@ -13,13 +12,11 @@ IncomingCall::IncomingCall(QString phoneNumber, QWidget *parent)
         : QWidget(parent)
 {
     this->phoneNumber = phoneNumber;
-    qDebug() << "Call from: " << this->phoneNumber;
     getScreenSize();
     createCommonLayout();
 }
 
 IncomingCall::~IncomingCall() {
-    qDebug() << "Incoming destructor";
 }
 
 void IncomingCall::showIncoming() {
@@ -33,7 +30,6 @@ void IncomingCall::showIncoming() {
 }
 
 void IncomingCall::hang(){
-    qDebug() << "hang slot";
     DialerWindow *dialerWindow = new DialerWindow();
     dialerWindow->showDialer();
     incomingWindow->close();
@@ -42,7 +38,6 @@ void IncomingCall::hang(){
 }
 
 void IncomingCall::answer(){
-    qDebug() << "answer slot";
     CallWindow *callWindow = new CallWindow(phoneNumber);
     callWindow->showWindow();
     incomingWindow->close();

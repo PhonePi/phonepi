@@ -3,7 +3,6 @@
 #include "Button.h"
 #include "DialerWindow.h"
 #include "Additional.h"
-#include <QDebug>
 #include <QTimer>
 
 CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
@@ -21,7 +20,6 @@ CallWindow::CallWindow(QString phoneNumber, QWidget *parent)
 }
 
 CallWindow::~CallWindow() {
-    qDebug() << "Call window destructor";
 }
 
 void CallWindow::getScreenSize() {
@@ -82,7 +80,6 @@ void CallWindow::showWindow() {
 }
 
 void CallWindow::updateTimerLabel() {
-    qDebug() << "updateLabel";
     secs++;
     if(secs > 59) {
         min++;
@@ -96,7 +93,6 @@ void CallWindow::updateTimerLabel() {
 }
 
 void CallWindow::hang() {
-    qDebug() << "hang slot";
     DialerWindow *dialerWindow = new DialerWindow();
     dialerWindow->showDialer();
     callWindow->close();

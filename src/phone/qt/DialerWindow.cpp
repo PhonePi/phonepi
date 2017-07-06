@@ -14,13 +14,11 @@ DialerWindow::DialerWindow(QWidget *parent)
         : QWidget(parent)
 {
     getSimPath();
-    qDebug() << "Using modem: " << selected_modem;
     screenSize = getScreenSize();
     createCommonLayout();
 }
 
 DialerWindow::~DialerWindow(){
-    qDebug() << "DialerWindow destructor";
 
 }
 
@@ -36,7 +34,6 @@ void DialerWindow::showDialer(){
 
 void DialerWindow::dialNumber()
 {
-    qDebug() << "dialNumber slot";
     QString dialedNumber = phoneNumber->text();
 	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
