@@ -37,7 +37,7 @@ void DialerWindow::dialNumber()
 	if(dialedNumber.isEmpty() || dialedNumber.isNull())
 		return;
 
-    dialNumber(dialedNumber);
+    makeCall(dialedNumber);
 
     CallWindow *callWindow = new CallWindow(dialedNumber);
     callWindow->showWindow();
