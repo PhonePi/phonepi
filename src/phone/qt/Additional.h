@@ -13,11 +13,15 @@
 #include <QWidget>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
+#include <QDebug>
 #include <sys/stat.h>
 
 
-static std::string workingDir = "~//Repos//KSPT//Phone//src//phone//qt//";
+static std::string workingDir = "~//phonepi//src//phone//qt//";
 static QDBusConnection bus = QDBusConnection::systemBus();
+
+static QWidget* currentWidget;
+static QWidget* currentClass;
 
 static QString getSimPath(){
     struct stat buf;
@@ -77,7 +81,7 @@ static QPalette getCommonPalette(QWidget* widget){
     return pal;
 }
 
-static void dialNumber(QString number){
+static void makeCall(QString number){
     if(!bus.isConnected()){
         qDebug() << "Connection is not established";
         exit(1);
@@ -86,6 +90,16 @@ static void dialNumber(QString number){
     QDBusInterface dbus_iface("org.ofono", getSimPath(), "org.ofono.VoiceCallManager", bus);
     dbus_iface.call(QDBus::Block, "Dial", QVariant::fromValue(QString(number)),
                     QVariant::fromValue(QString("")));
+}
+
+static void answerCall(QString voiceCallPath){
+    if(!bus.isConnected()){
+        qDebug() << "Connection is not established";
+        exit(1);
+    }
+
+    QDBusInterface dbus_iface("org.ofono", voiceCallPath, "org.ofono.VoiceCall", bus);
+    dbus_iface.call(QDBus::Block, "Aswer");
 }
 
 static void hangUp(){
@@ -98,7 +112,18 @@ static void hangUp(){
     dbus_iface.call(QDBus::Block, "HangupAll");
 }
 
+static void setWidgetInfo(QWidget* widget, QWidget* widget1){
+    currentWidget = widget;
+    currentClass = widget1;
+}
 
+static void signalHandler(int signum){
+    DialerWindow *dialerWindow = new DialerWindow();
+    dialerWindow->showDialer();
+    currentWidget->close();
+    delete(currentWidget);
+    delete(currentClass);
+}
 
 
 

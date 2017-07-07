@@ -1,19 +1,23 @@
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QPushButton>
+#include <QTextEdit>
 #include <QScreen>
 #include <QtDBus/QDBusInterface>
+#include <csignal>
+#include <iostream>
 #include "DialerWindow.h"
 #include "Button.h"
 #include "CallWindow.h"
 #include "IncomingCall.h"
 #include "Additional.h"
 
-IncomingCall::IncomingCall(QString phoneNumber, QWidget *parent)
+IncomingCall::IncomingCall(QString callPath, QString phoneNumber, QWidget *parent)
         : QWidget(parent)
 {
+    this->callPath = callPath;
     this->phoneNumber = phoneNumber;
-    getScreenSize();
+    screenSize = getScreenSize();
     createCommonLayout();
+
+    std::signal(SIGUSR1, signalHandler);
 }
 
 IncomingCall::~IncomingCall() {
@@ -27,31 +31,22 @@ void IncomingCall::showIncoming() {
     incomingWindow->activateWindow();
     incomingWindow->setLayout(commonLayout);
     incomingWindow->show();
+
+    setWidgetInfo(incomingWindow, this);
 }
 
 void IncomingCall::hang(){
     hangUp();
-
-    DialerWindow *dialerWindow = new DialerWindow();
-    dialerWindow->showDialer();
-    incomingWindow->close();
-    delete(incomingWindow);
-    delete(this);
 }
 
-void IncomingCall::answer(){
+void IncomingCall::answer() {
+    answerCall(callPath);
+
     CallWindow *callWindow = new CallWindow(phoneNumber);
     callWindow->showWindow();
     incomingWindow->close();
-    delete(incomingWindow);
-    delete(this);
-}
-
-void IncomingCall::getScreenSize() {
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-    screenSize.setWidth(screenGeometry.width());
-    screenSize.setHeight(screenGeometry.height());
+    delete (incomingWindow);
+    delete (this);
 }
 
 void IncomingCall::createCommonLayout() {

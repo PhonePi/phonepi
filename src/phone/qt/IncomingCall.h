@@ -13,7 +13,7 @@
 class IncomingCall : public QWidget{
     Q_OBJECT
 public:
-    IncomingCall(QString phoneNumber, QWidget *parent = 0);
+    IncomingCall(QString callPath, QString phoneNumber, QWidget *parent = 0);
     ~IncomingCall();
     void showIncoming();
 
@@ -22,11 +22,11 @@ public slots:
     void hang();
 
 private:
+    QString callPath;
     QString phoneNumber;
     QSize screenSize;
     QGridLayout *commonLayout;
     QWidget *incomingWindow;
-    void getScreenSize();
     void createCommonLayout();
 
 };
