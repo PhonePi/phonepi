@@ -178,6 +178,7 @@ DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *u
         std::vector<g_answer> calls;
         DBus::getAnswer(msg, args, &calls);
         GString number, state;
+        GString path = calls[0].name;
 
         if(calls.size() == 0){
             writeLog("No calls found", ERROR);
@@ -192,13 +193,24 @@ DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *u
                 state = props.prop_val;
         }
         std::string message = std::string("Call added.")
-                          + std::string(" Phone number: ") + number.str
-                          + std::string(" State: ") + state.str;
+                              + std::string(" Call path: ") + path.str
+                              + std::string(" Phone number: ") + number.str
+                              + std::string(" State: ") + state.str;
         writeLog(message.c_str(), INFO);
+
+        if(std::string("incoming") == std::string(state.str)) {
+            std::string cmd = "/usr/bin/dialer-pi "
+                              + std::string(path.str) + " " + std::string(number.str);
+            system(cmd.c_str());
+            writeLog(std::string("Command: " + cmd).c_str(), INFO);
+        }
     }
 
-    if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved"))
+    if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved")) {
         writeLog("CallRemoved callback", INFO);
+        int i = raise(SIGUSR1);
+        writeLog(std::to_string(i).c_str(), INFO);
+    }
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
