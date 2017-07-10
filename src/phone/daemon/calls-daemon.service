@@ -4,7 +4,7 @@ After=ofono.service
 
 [Service]
 User=alarm
-ExecStart=/bin/calls_daemon
+ExecStart=/usb/bin/calls_daemon
 
 [Install]
 Alias=calls-daemon.service
