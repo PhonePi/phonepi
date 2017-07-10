@@ -55,6 +55,8 @@ void Modem::getModem() {
         }
     }
 
+    std::string command = "echo Modem: "  + std::string(name.str) + " > /usr/share/phonepi/info";
+    system(command.c_str());
     std::string msg = std::string("Modem ") + name.str + " powered state: " +
             (enabled ? "True" : "False");
     writeLog(msg.c_str(), INFO);
@@ -94,17 +96,8 @@ void Modem::getOperator() {
             currentOPerator = std::string(prop.prop_val.str);
     }
 
-    struct passwd *pw = getpwuid(getuid());
-    const char *homedir = pw->pw_dir;
-
-    std::ofstream operName (std::string(homedir) + "//.operator");
-    if(!operName){
-        writeLog("Cannot open .operator file", ERROR);
-        exit(1);
-    }
-
-    operName << currentOPerator << std::endl;
-    operName.close();
+    std::string command = "echo Operator: "  + currentOPerator + " >> /usr/share/phonepi/info";
+    system(command.c_str());
 
     writeLog((std::string("Current operator: ") + currentOPerator).c_str(), INFO);
 }
