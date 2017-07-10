@@ -1,4 +1,6 @@
 #include <cstdlib>
+#include <array>
+#include <memory>
 #include "DBus.h"
 
 DBus::DBus() {
@@ -42,8 +44,6 @@ void DBus::getAnswer(DBusMessage *msg, DBusMessageIter args, std::vector<g_answe
         DBusMessageIter structIter;
         dbus_message_iter_recurse(&args, &structIter);
         getAnswer(msg, structIter, answ);
-        //answ->push_back(answer);
-        //answer.props.clear();
         return;
     }
     if(DBUS_TYPE_DICT_ENTRY == dbus_message_iter_get_arg_type(&args)) {
@@ -168,6 +168,7 @@ void DBus::methodCallSetBoolProp(const char* busName, const char* path, const ch
 }
 
 DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *user_data) {
+    std::string dialpid;
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallAdded")){
         writeLog("CallAdded callback", INFO);
         DBusMessageIter args;
@@ -199,16 +200,29 @@ DBusHandlerResult DBus::callback(DBusConnection *conn, DBusMessage *msg, void *u
         writeLog(message.c_str(), INFO);
 
         if(std::string("incoming") == std::string(state.str)) {
-            std::string cmd = "/usr/bin/dialer-pi "
-                              + std::string(path.str) + " " + std::string(number.str);
-            system(cmd.c_str());
-            writeLog(std::string("Command: " + cmd).c_str(), INFO);
+
+            int pid = fork();
+            if(pid == -1) {
+                writeLog("Dialer-pi launch faied.\n", ERROR);
+                ENDOFLOG;
+            }
+            else if(!pid){
+                writeLog("Dialer-pi launch", INFO);
+
+                std::string cmd = "/usr/bin/dialer-pi " + std::string(path.str) + " " + std::string(number.str);
+                system(cmd.c_str());
+            }
         }
     }
 
     if(dbus_message_is_signal(msg, "org.ofono.VoiceCallManager", "CallRemoved")) {
-        writeLog("CallRemoved callback", INFO);
-        int i = raise(SIGUSR1);
+        writeLog("Call removed", INFO);
+        pid_t dialerPid;
+        sscanf(exec("pgrep dialer-pi").c_str(), "%d", &dialerPid);
+        writeLog(std::to_string(dialerPid).c_str(), INFO);
+
+        int i = kill(dialerPid, SIGUSR1);
+        writeLog(("Signal sent to " + std::to_string(dialerPid)).c_str(), INFO);
         writeLog(std::to_string(i).c_str(), INFO);
     }
 
