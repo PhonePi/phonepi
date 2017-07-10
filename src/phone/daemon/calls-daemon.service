@@ -3,6 +3,7 @@ Description=PhonePi daemon for calls handling
 After=ofono.service
 
 [Service]
+User=alarm
 ExecStart=/bin/calls_daemon
 
 [Install]
