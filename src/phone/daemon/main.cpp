@@ -1,6 +1,7 @@
 #include <fstream>
 #include "Additional.h"
 #include "Modem.h"
+#include <iostream>
 
 #define INFO 0
 #define ERROR -1
@@ -11,8 +12,12 @@ int main() {
     writeLog("Start calls daemon", INFO);
     DBus *dbus_class = new DBus;
 
-    system("mkdir -p /usr/share/phonepi");
-    system("rm -f /usr/share/phonepi/info");
+    int info = system("mkdir -p /usr/share/phonepi");
+	if(info == 256)
+		exit(256);
+//    int rm = system("rm -f /usr/share/phonepi/info");
+//	if(rm == 256)
+//		exit(256);
 
     Modem current_modem(dbus_class, "/sim900_0");
     current_modem.enableModem();
